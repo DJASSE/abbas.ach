@@ -423,52 +423,57 @@ function renderQuestion(){
 }
 
 /* ===== answer logic ===== */
-function selectAnswer(idx,btnElement){
+function selectAnswer(idx, btnElement){
   if(!canAnswer) return;
   canAnswer = false;
   const q = selectedQuestions[currentIndex];
   const buttons = Array.from(document.querySelectorAll('.choice'));
-  // show feedback
+
   if(idx === q.answer){
-    // correct
-    currentPrize = moneyLadder[currentIndex]; // prize for this level
+    // إجابة صحيحة
+    currentPrize = moneyLadder[currentIndex]; 
     score = currentPrize;
     btnElement.classList.add('correct');
     playSound('win');
     showConfetti();
-    $('feedback').textContent = `✅ good answer you won ${currentPrize.toLocaleString()}$`;
+    $('feedback').textContent = `✅ إجابة صحيحة! ربحك الحالي: ${currentPrize.toLocaleString()}$`;
   } else {
+    // إجابة خاطئة
     btnElement.classList.add('wrong');
-    // reveal correct
-    buttons[q.answer].classList.add('correct');
-    // fallback to nearest guarantee
-    if(currentIndex >= 10) score = 32000;
-    else if(currentIndex >= 5) score = 1000;
-    else score = 0;
+    buttons[q.answer].classList.add('correct'); // كشف الإجابة الصحيحة
+
+    // تعديل قانون الخسارة
+    if(currentIndex < 5) score = 0;          // قبل السؤال الخامس
+    else if(currentIndex < 10) score = 1000; // بين السؤال 5 و10
+    else score = 32000;                       // بعد السؤال 10
+
     playSound('lose');
-    $('feedback').textContent = `❌ خطأ! دفعتك النهائية: ${score.toLocaleString()}$ (الضمان مفعّل)`;
+    $('feedback').textContent = `❌ خطأ! جائزتك النهائية بعد الضمان: ${score.toLocaleString()}$`;
+    
+    // نهاية اللعبة بعد الخطأ
+    setTimeout(()=>{
+      alert(`🏁 انتهت اللعبة!\nجائزتك النهائية: ${score.toLocaleString()}$`);
+      resetGame();
+    }, 500);
+    return; // توقف عن الانتقال للسؤال التالي
   }
 
-  // update score display
+  // تحديث العرض
   $('scoreDisplay').textContent = score ? score.toLocaleString()+'$' : '0$';
   $('prizeDisplay').textContent = (currentPrize ? currentPrize.toLocaleString()+'$' : '—');
 
-  // after small delay -> next question or finish
+  // الانتقال للسؤال التالي بعد الإجابة الصحيحة
   setTimeout(()=>{
     currentIndex++;
-    if(currentIndex < 15){
+    if(currentIndex < selectedQuestions.length){
       renderQuestion();
     } else {
-      // finish
-      setTimeout(()=> {
-        alert(`🎉 انتهت اللعبة!\nجائزتك النهائية: ${score.toLocaleString()}$`);
-        resetGame();
-      }, 200);
+      alert(`🎉 انتهت اللعبة! جائزتك النهائية: ${score.toLocaleString()}$`);
+      resetGame();
     }
   }, 900);
 }
 
-/* ===== start / reset / skip ===== */
 function startGame(){
   // pick 15 random questions from pool (or all if pool < 15)
   const pool = triviaQuestions;
@@ -619,4 +624,5 @@ $('showRules').addEventListener('click', ()=> {
 
 </body>
 </html>
+
 
