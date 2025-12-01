@@ -535,25 +535,34 @@ function openFlashOverlay(){
 }
 function closeFlash(){ $('flashOverlay').style.display='none' }
 
-/* ===== sounds (tiny WebAudio) ===== */
-const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 function playSound(name){
+  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   if(!audioCtx) return;
-  const o = audioCtx.createOscillator();
+
+  const o1 = audioCtx.createOscillator();
+  const o2 = audioCtx.createOscillator();
   const g = audioCtx.createGain();
-  o.type = 'sine';
+  g.gain.value = 0.08;
+  g.connect(audioCtx.destination);
+
   if(name==='win'){
-    o.frequency.value = 880;
-    g.gain.value = 0.06;
-    o.connect(g); g.connect(audioCtx.destination);
-    o.start(); setTimeout(()=> { o.frequency.value = 660 }, 80);
-    setTimeout(()=> { o.stop() }, 260);
+    // صوت تصاعدي عند الإجابة الصحيحة
+    o1.type = 'triangle'; o1.frequency.value = 440;
+    o2.type = 'sine'; o2.frequency.value = 660;
+    o1.connect(g); o2.connect(g);
+    o1.start(); o2.start();
+    o1.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.5);
+    o2.frequency.exponentialRampToValueAtTime(1320, audioCtx.currentTime + 0.5);
+    setTimeout(()=>{ o1.stop(); o2.stop(); }, 500);
   } else {
-    o.frequency.value = 220;
-    g.gain.value = 0.06;
-    o.connect(g); g.connect(audioCtx.destination);
-    o.start(); setTimeout(()=> { o.frequency.value = 180 }, 90);
-    setTimeout(()=> { o.stop() }, 300);
+    // صوت تنازلي عند الإجابة الخاطئة
+    o1.type = 'sawtooth'; o1.frequency.value = 440;
+    o2.type = 'square'; o2.frequency.value = 220;
+    o1.connect(g); o2.connect(g);
+    o1.start(); o2.start();
+    o1.frequency.exponentialRampToValueAtTime(110, audioCtx.currentTime + 0.6);
+    o2.frequency.exponentialRampToValueAtTime(55, audioCtx.currentTime + 0.6);
+    setTimeout(()=>{ o1.stop(); o2.stop(); }, 600);
   }
 }
 
@@ -624,6 +633,7 @@ $('showRules').addEventListener('click', ()=> {
 
 </body>
 </html>
+
 
 
 
