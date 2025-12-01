@@ -2,334 +2,311 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>🎮 Djasser Super Trivia Game — Cartoon Edition</title>
+<title>Djasser Games — Trivia & Flashcards for my english teacther</title>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <style>
-/* 🌈 CARTOON THEME */
-body {
-  margin: 0;
-  font-family: 'Comic Sans MS', 'Poppins', sans-serif;
-  background: linear-gradient(135deg, #ff9a9e, #fad0c4);
-  color: #222;
-  padding: 20px;
-}
-
-header {
-  text-align: center;
-  color: #fff;
-  text-shadow: 3px 3px 0 #000;
-}
-
-h1 { font-size: 3rem; }
-
-/* Navigation Tabs */
-nav button {
-  padding: 10px 20px;
-  margin: 5px;
-  border-radius: 15px;
-  border: 3px solid #fff;
-  background: #ffeb3b;
-  cursor: pointer;
-  font-size: 18px;
-  transition: 0.2s;
-}
-nav button:hover {
-  transform: scale(1.1);
-}
-
-nav .active {
-  background: #4caf50;
-  color: white;
-  box-shadow: 0 0 10px #fff;
-}
-
-/* Card style */
-.card {
-  background: #fff;
-  padding: 25px;
-  border-radius: 20px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.2);
-  animation: pop 0.5s ease;
-}
-@keyframes pop {
-  from { transform: scale(0.8); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
-}
-
-/* Flashcard */
-.flashcard {
-  background: #fff;
-  border-radius: 20px;
-  padding: 20px;
-  width: 80%;
-  margin: auto;
-  min-height: 200px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  font-size: 30px;
-  user-select: none;
-  cursor: pointer;
-  transition: transform 0.6s;
-  transform-style: preserve-3d;
-}
-.flashcard.flip { transform: rotateY(180deg); }
-.flashcard .side {
-  position:absolute;
-  width:100%;
-  height:100%;
-  backface-visibility:hidden;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  font-size: 28px;
-  padding:20px;
-}
-.flashcard .back { transform: rotateY(180deg); background:#e0f7fa; }
-
-/* Buttons */
-button.primary {
-  background:#4caf50;
-  padding: 12px 20px;
-  border-radius: 15px;
-  color:#fff;
-  font-size: 18px;
-}
-button.secondary {
-  background:#2196f3;
-  padding: 10px 18px;
-  border-radius: 12px;
-  color:#fff;
-  font-size: 16px;
-}
-button.danger {
-  background:#f44336;
-  padding: 10px 18px;
-  border-radius: 12px;
-  color:#fff;
-  font-size: 16px;
-}
-
-/* Language Switch */
-#langBtn {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  background: #ff9800;
-  padding: 10px 15px;
-  border-radius: 50%;
-  font-size: 24px;
-  cursor: pointer;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-}
+/* (احتفظت بنفس الـ CSS من كودك الأصلي) */
+:root{--primary:#4f46e5;--secondary:#64748b;--danger:#ef4444;--bg:#ffffff;--text:#0f172a;--card-bg:#f8fafc;--radius:16px;--shadow:0 4px 20px rgba(0,0,0,0.08);--transition:0.25s ease}
+body{margin:0;font-family:Inter,sans-serif;background:var(--bg);color:var(--text);padding:20px}
+header{text-align:center;margin-bottom:20px}
+h1{margin:0;font-size:2.3rem;font-weight:800}
+nav{margin-top:15px}
+nav button{padding:10px 20px;margin:5px;border-radius:var(--radius);border:2px solid transparent;background:var(--card-bg);cursor:pointer;transition:var(--transition);font-size:15px}
+nav button:hover{border-color:var(--primary);transform:translateY(-3px)}
+nav .active{background:var(--primary);color:white;box-shadow:var(--shadow)}
+section{display:none;animation:fadeIn .4s ease}
+section.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.card{background:var(--card-bg);padding:20px;border-radius:var(--radius);box-shadow:var(--shadow);margin-top:20px;transition:var(--transition)}
+.card:hover{transform:scale(1.01)}
+button{padding:12px 20px;border:none;border-radius:var(--radius);cursor:pointer;font-size:15px;transition:var(--transition)}
+button:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
+.primary{background:var(--primary);color:white}
+.secondary{background:var(--secondary);color:white}
+.danger{background:var(--danger);color:white}
+.flashcard{background:white;width:90%;max-width:400px;min-height:220px;margin:30px auto;padding:20px;border-radius:var(--radius);box-shadow:var(--shadow);display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;user-select:none;transition:transform .6s;transform-style:preserve-3d;position:relative}
+.flashcard.flip{transform:rotateY(180deg)}
+.flashcard .side{position:absolute;width:100%;height:100%;backface-visibility:hidden;display:flex;align-items:center;justify-content:center;padding:20px;border-radius:var(--radius)}
+.flashcard .back{transform:rotateY(180deg);background:#f1f5f9}
+#no-cards{color:var(--secondary);text-align:center;margin-top:20px}
+@media(max-width:600px){button{width:100%;margin-top:10px}}
 </style>
 </head>
 <body>
 
-<div id="langBtn" onclick="toggleLang()">🌍</div>
-
 <header>
-  <h1>🎉 Djasser Cartoon Trivia Game 🎉</h1>
+  <h1>🎮 Djasser achalf Games</h1>
+  <p style="color:#475569">Play trivia, flip sorry for the simpel worm miss.</p>
+
+  <nav>
+    <button class="tab active" data-tab="trivia">Trivia</button>
+    <button class="tab" data-tab="flashcards">Flashcards</button>
+    <button class="tab" data-tab="settings">Settings</button>
+  </nav>
 </header>
 
-<nav>
-  <button class="tab active" data-tab="trivia">❓ Trivia</button>
-  <button class="tab" data-tab="flashcards">🧠 Flashcards</button>
-  <button class="tab" data-tab="settings">⚙️ Settings</button>
-</nav>
-
-<!-- Trivia -->
 <section id="trivia" class="active">
-  <h2>⭐ Challenge Yourself!</h2>
-  <button class="primary" onclick="startTrivia()">▶️ Start Game</button>
+  <h2>✨ Trivia Game</h2>
+  <button class="primary" onclick="startTrivia()">Start Game</button>
 
-  <div id="triviaCard" class="card" style="display:none;"> 
+  <div id="triviaCard" class="card" style="display:none;">
     <h3 id="questionText"></h3>
     <div id="answerButtons"></div>
   </div>
 
-  <h3>🏆 Score: <span id="score">0</span></h3>
+  <h3>Score: <span id="score">0</span></h3>
 </section>
 
-<!-- Flashcards -->
 <section id="flashcards">
-  <h2>📚 Study Flashcards</h2>
-  <button class="primary" onclick="addFlashcard()">➕ Add Flashcard</button>
-  <button class="secondary" onclick="shuffleFlashcards()">🔀 Shuffle</button>
+  <h2>🧠 Flashcards</h2>
+  <button class="primary" onclick="addFlashcard()">Add Flashcard</button>
+  <button class="secondary" onclick="shuffleFlashcards()">Shuffle</button>
 
   <div id="flashcardArea">
     <div id="flashcard" class="flashcard" onclick="flipCard()" style="display:none;">
       <div class="side front"></div>
       <div class="side back"></div>
     </div>
-    <div id="no-cards">😢 No flashcards — add one!</div>
+    <div id="no-cards">No flashcards yet — add one!</div>
   </div>
 
-  <button class="primary" onclick="nextCard()">➡️ Next</button>
+  <button class="primary" onclick="nextCard()">Next</button>
 </section>
 
-<!-- Settings -->
 <section id="settings">
-  <h2>⚙️ Game Settings</h2>
-
-  <button class="secondary" onclick="loadSampleData()">📥 Load Sample Data</button>
-  <button class="primary" onclick="addTriviaQuestion()">➕ Add Trivia Question</button>
-  <button class="danger" onclick="clearAll()">🗑️ Clear All</button>
+  <h2>⚙️ Settings</h2>
+  <button class="secondary" onclick="loadSampleData()">Load Sample Data</button>
+  <button class="danger" onclick="clearAll()">Clear All Data</button>
 </section>
 
 <script>
-/* LANGUAGE SWITCH */
-let currentLang = 'en';
-function toggleLang(){
-  if(currentLang === 'en'){
-    document.body.style.direction='rtl';
-    document.body.style.textAlign='right';
-    currentLang='ar';
-  } else {
-    document.body.style.direction='ltr';
-    currentLang='en';
-  }
-}
+/* TABS */
+document.querySelectorAll(".tab").forEach(btn=>{
+  btn.onclick = () => {
+    document.querySelectorAll(".tab").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    document.querySelectorAll("section").forEach(sec=>sec.classList.remove("active"));
+    document.getElementById(btn.dataset.tab).classList.add("active");
+  };
+});
 
 /* STORAGE */
-let triviaQuestions = [
-  {question:"What does corruption mean?",choices:["Honesty","Dishonesty","Friendship"],answer:1},
-  {question:"Bribery is…",choices:["Giving money illegally","Paying taxes","Helping the poor"],answer:0},
-  {question:"Embezzlement means…",choices:["Stealing money you manage","Borrowing money","Donating money"],answer:0},
-  {question:"Counterfeit products are…",choices:["Original","Fake","Organic"],answer:1},
-  {question:"Fraud means…",choices:["Truth","Cheating","Working hard"],answer:1},
-  {question:"Smuggling refers to…",choices:["Legal transport","Illegal transport","Air travel"],answer:1},
-  {question:"Illegal means…",choices:["Allowed","Not allowed","Traditional"],answer:1},
-  {question:"A whistleblower is…",choices:["Works in a bank","Reports corruption","Sells goods"],answer:1},
-  {question:"Tax evasion means…",choices:["Paying extra taxes","Avoiding paying taxes illegally","Studying taxes"],answer:1},
-  {question:"A bribe is…",choices:["A gift","Illegal money","A fine"],answer:1},
-  {question:"Nepotism means giving jobs to…",choices:["Best candidates","Strangers","Relatives"],answer:2},
-  {question:"Unethical means…",choices:["Following rules","Not following moral rules","Being brave"],answer:1},
-  {question:"Opposite of honest?",choices:["dis-","un-","il-"],answer:0},
-  {question:"Counterfeiting money is…",choices:["Legal","Forging currency","Online banking"],answer:1},
-  {question:"Transparency means…",choices:["Hiding facts","Being clear","Paying fines"],answer:1},
-  {question:"Kickback is…",choices:["A sport action","Illegal payment","A receipt"],answer:1},
-  {question:"Fake invoices are…",choices:["Correct bills","Incorrect documents","Free services"],answer:1},
-  {question:"A genuine product is…",choices:["Fake","Original","Cheap"],answer:1},
-  {question:"Piracy refers to…",choices:["Downloading legally","Stealing creative works","Sailing ships"],answer:1},
-  {question:"Deceive means…",choices:["Protect","Lie","Fix"],answer:1},
-  {question:"Companies must follow…",choices:["Weather rules","Code of ethics","Sport laws"],answer:1},
-  {question:"Severe laws are…",choices:["Very soft","Very strict","Very old"],answer:1},
-  {question:"Responsibility means…",choices:["Duty","Luck","Confidence"],answer:0},
-  {question:"Money laundering means…",choices:["Cleaning coins","Hiding illegal money","Donating money"],answer:1},
-  {question:"A moral action is…",choices:["Wrong","Ethical","Illegal"],answer:1},
-  {question:"Imitate means…",choices:["Create","Copy","Destroy"],answer:1},
-  {question:"Deception means…",choices:["Honesty","Cheating","Shopping"],answer:1},
-  {question:"A scandal is…",choices:["A secret","A shocking illegal event","A celebration"],answer:1},
-  {question:"Immoral means…",choices:["Ethical","Not ethical","Beautiful"],answer:1},
-  {question:"A criminal organization is…",choices:["Legal business","Group committing crimes","School"],answer:1},
-  {question:"Forgery means…",choices:["Fixing","Producing fake documents","Cleaning"],answer:1},
-  {question:"Favouritism is giving opportunities to…",choices:["Everyone","Only friends","Scientists"],answer:1},
-  {question:"Audit means…",choices:["Check financial accounts","Plant trees","Sell products"],answer:0},
-  {question:"Consumers are…",choices:["Buyers","Sellers","Factories"],answer:0},
-  {question:"Products refer to…",choices:["People","Goods","Laws"],answer:1},
-  {question:"Companies aim to make…",choices:["Profits","Weapons","Beaches"],answer:0},
-  {question:"A lobby is a group that…",choices:["Influences decisions","Builds houses","Plays music"],answer:0},
-  {question:"Illegal trade means…",choices:["Allowed business","Forbidden business","Small business"],answer:1},
-  {question:"Ethics refers to…",choices:["Bad actions","Moral principles","Fashion"],answer:1},
-  {question:"A fake brand is…",choices:["Original","Counterfeit","Expensive"],answer:1},
-  {question:"Child labour means…",choices:["School","Children working illegally","Kids playing"],answer:1},
-  {question:"Stringent standards are…",choices:["Loose","Difficult and strict","Boring"],answer:1},
-  {question:"Property is…",choices:["Something you own","A feeling","A drink"],answer:0},
-  {question:"Speculators are…",choices:["Fight corruption","Trade for quick profit","Clean streets"],answer:1},
-  {question:"Hide means…",choices:["Show","Conceal","Buy"],answer:1},
-  {question:"Disguise means…",choices:["Reveal","Hide identity","Explain"],answer:1},
-  {question:"Goods are…",choices:["Products","Trees","Buildings"],answer:0},
-  {question:"Cheating customers is…",choices:["Ethical","Unethical","Helpful"],answer:1},
-  {question:"Laws are made to…",choices:["Confuse people","Protect society","Decorate cities"],answer:1},
-  {question:"Ill-gotten gains mean…",choices:["Money earned morally","Money earned illegally","Money from gifts"],answer:1}
-];
-let flashcards = [];
+let triviaQuestions = JSON.parse(localStorage.getItem("trivia")) || [];
+let flashcards = JSON.parse(localStorage.getItem("flashcards")) || [];
 let score = 0;
 
-/* MONEY LADDER */
-const moneyLadder = [100,200,300,500,1000,2000,4000,8000,16000,32000,64000,125000,250000,500000,1000000];
+function saveData(){
+  localStorage.setItem("trivia", JSON.stringify(triviaQuestions));
+  localStorage.setItem("flashcards", JSON.stringify(flashcards));
+}
+
+/* MONEY LADDER (15 QUESTIONS) */
+const moneyLadder = [
+  100,200,300,500,1000,2000,4000,8000,16000,32000,64000,125000,250000,500000,1000000
+];
+
+/* UTILS */
+function shuffleArray(arr){
+  // Fisher-Yates shuffle (safer than sort hack)
+  for(let i = arr.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+/* TRIVIA LOGIC */
 let currentQ = 0;
 let selectedQuestions = [];
 
-function shuffleArray(arr){ return arr.sort(()=>Math.random()-0.5); }
-
 function startTrivia(){
-  if(triviaQuestions.length < 15){ alert("Need at least 15 questions!"); return; }
-  score=0; currentQ=0;
-  selectedQuestions = shuffleArray([...triviaQuestions]).slice(0,15);
+  if(triviaQuestions.length < 15){
+    alert("You need at least 15 trivia questions! Load sample data first.");
+    return;
+  }
+  score = 0;
+  currentQ = 0;
+  // اختيار 15 سؤال عشوائي
+  selectedQuestions = shuffleArray([...triviaQuestions]).slice(0, 15);
+  document.getElementById("score").textContent = score;
   showTriviaQuestion();
 }
 
 function showTriviaQuestion(){
   const q = selectedQuestions[currentQ];
-  document.getElementById("triviaCard").style.display="block";
-  document.getElementById("questionText").innerHTML = `❓ ${q.question}`;
+  const card = document.getElementById("triviaCard");
+  card.style.display = "block";
 
-  const box = document.getElementById("answerButtons");
-  box.innerHTML="";
+  document.getElementById("questionText").innerText =
+    `Q${currentQ+1}: ${q.question}`;
 
-  q.choices.forEach((c,i)=>{
+  const ansBox = document.getElementById("answerButtons");
+  ansBox.innerHTML = "";
+
+  q.choices.forEach((choice,i)=>{
     const btn=document.createElement("button");
     btn.className="secondary";
-    btn.textContent = c + " " + ["🐣","🐥","🐔","🦅"][i];
+    btn.textContent=choice;
 
     btn.onclick=()=>{
-      if(i===q.answer) score = moneyLadder[currentQ];
+      if(i === q.answer){
+        // إذا صح: تمنح جائزة هذا المستوى
+        score = moneyLadder[currentQ];
+        document.getElementById("score").textContent = score;
+      } else {
+        // خطأ = تحتفظ بالضمان الأقرب (مثال بسيط: إذا أخطأت قبل الضمان الأول -> 0)
+        // يمكنك تعديل هذا السلوك لو أردت أن تعطي الضمان الأخير الذي وصل إليه اللاعب
+        if(currentQ >= 10) score = 32000;
+        else if(currentQ >= 5) score = 1000;
+        else score = 0;
+        document.getElementById("score").textContent = score;
+      }
+
       currentQ++;
-      if(currentQ<15) showTriviaQuestion();
-      else alert("🎉 Final Prize: $"+score);
+
+      if(currentQ < 15){
+        showTriviaQuestion();
+      } else {
+        alert("🎉 Finished!\nFinal Prize: $" + score);
+        card.style.display="none";
+      }
     };
-    box.appendChild(btn);
+
+    ansBox.appendChild(btn);
   });
 }
 
 /* FLASHCARDS */
+let flashIndex = 0;
+
 function refreshFlashcard(){
-  let card=document.getElementById("flashcard");
-  let no=document.getElementById("no-cards");
-  if(flashcards.length===0){ card.style.display="none"; no.style.display="block"; return; }
-  no.style.display="none"; card.style.display="flex";
-  document.querySelector('.front').textContent = flashcards[0].front + " 📘";
-  document.querySelector('.back').textContent = flashcards[0].back + " 💡";
+  const card = document.getElementById("flashcard");
+  const noCards = document.getElementById("no-cards");
+
+  if(flashcards.length === 0){
+    card.style.display="none";
+    noCards.style.display="block";
+    return;
+  }
+
+  noCards.style.display="none";
+  card.style.display="flex";
+
+  card.classList.remove("flip");
+  document.querySelector(".front").textContent = flashcards[flashIndex].front;
+  document.querySelector(".back").textContent = flashcards[flashIndex].back;
 }
 
-function flipCard(){ document.getElementById("flashcard").classList.toggle("flip"); }
+function flipCard(){
+  document.getElementById("flashcard").classList.toggle("flip");
+}
 
-function addFlashcard(){
-  let f = prompt("Front text:");
-  let b = prompt("Back text:");
-  flashcards.push({front:f, back:b});
+function nextCard(){
+  if(flashcards.length === 0) return;
+  flashIndex = (flashIndex + 1) % flashcards.length;
   refreshFlashcard();
 }
 
-function shuffleFlashcards(){ flashcards = shuffleArray(flashcards); refreshFlashcard(); }
-function nextCard(){ flashcards.push(flashcards.shift()); refreshFlashcard(); }
-
-/* ADD TRIVIA QUESTION */
-function addTriviaQuestion(){
-  let q = prompt("Enter question:");
-  let a = prompt("Choice A:");
-  let b = prompt("Choice B:");
-  let c = prompt("Choice C:");
-  let ans = Number(prompt("Correct answer index (0,1,2):"));
-
-  triviaQuestions.push({question:q, choices:[a,b,c], answer:ans});
+function shuffleFlashcards(){
+  flashcards = shuffleArray(flashcards);
+  flashIndex = 0;
+  saveData();
+  refreshFlashcard();
 }
 
-/* LOAD SAMPLE DATA FROM PDF (SIMPLIFIED) */
+function addFlashcard(){
+  const front = prompt("Enter card FRONT text:");
+  const back = prompt("Enter card BACK text:");
+  if(!front || !back) return;
+  flashcards.push({front, back});
+  saveData();
+  refreshFlashcard();
+}
+
+/* SETTINGS: loadSampleData (منظم: triviaQuestions و flashcards منفصلين) */
 function loadSampleData(){
-  triviaQuestions.push(
-    {question:"Define corruption",choices:["Dishonest conduct","Good ethics","Charity"],answer:0},
-    {question:"Meaning of transparency",choices:["Being open","Being rich","Being fast"],answer:0},
-    {question:"Illegal act is?",choices:["Against law","Funny","Good deed"],answer:0},
-  );
-  alert("✔ Sample questions loaded!");
+{question:"What does corruption mean?",choices:["Honesty","Dishonesty","Friendship"],answer:1},
+{question:"Bribery is…",choices:["Giving money illegally","Paying taxes","Helping the poor"],answer:0},
+{question:"Embezzlement means…",choices:["Stealing money you manage","Borrowing money","Donating money"],answer:0},
+{question:"Counterfeit products are…",choices:["Original","Fake","Organic"],answer:1},
+{question:"Fraud means…",choices:["Truth","Cheating","Working hard"],answer:1},
+{question:"Smuggling refers to…",choices:["Legal transport","Illegal transport","Air travel"],answer:1},
+{question:"Illegal means…",choices:["Allowed","Not allowed","Traditional"],answer:1},
+{question:"A whistleblower is…",choices:["Works in a bank","Reports corruption","Sells goods"],answer:1},
+{question:"Tax evasion means…",choices:["Paying extra taxes","Avoiding paying taxes illegally","Studying taxes"],answer:1},
+{question:"A bribe is…",choices:["A gift","Illegal money","A fine"],answer:1},
+{question:"Nepotism means giving jobs to…",choices:["Best candidates","Strangers","Relatives"],answer:2},
+{question:"Unethical means…",choices:["Following rules","Not following moral rules","Being brave"],answer:1},
+{question:"Opposite of honest?",choices:["dis-","un-","il-"],answer:0},
+{question:"Counterfeiting money is…",choices:["Legal","Forging currency","Online banking"],answer:1},
+{question:"Transparency means…",choices:["Hiding facts","Being clear","Paying fines"],answer:1},
+{question:"Kickback is…",choices:["A sport action","Illegal payment","A receipt"],answer:1},
+{question:"Fake invoices are…",choices:["Correct bills","Incorrect documents","Free services"],answer:1},
+{question:"A genuine product is…",choices:["Fake","Original","Cheap"],answer:1},
+{question:"Piracy refers to…",choices:["Downloading legally","Stealing creative works","Sailing ships"],answer:1},
+{question:"Deceive means…",choices:["Protect","Lie","Fix"],answer:1},
+{question:"Companies must follow…",choices:["Weather rules","Code of ethics","Sport laws"],answer:1},
+{question:"Severe laws are…",choices:["Very soft","Very strict","Very old"],answer:1},
+{question:"Responsibility means…",choices:["Duty","Luck","Confidence"],answer:0},
+{question:"Money laundering means…",choices:["Cleaning coins","Hiding illegal money","Donating money"],answer:1},
+{question:"A moral action is…",choices:["Wrong","Ethical","Illegal"],answer:1},
+{question:"Imitate means…",choices:["Create","Copy","Destroy"],answer:1},
+{question:"Deception means…",choices:["Honesty","Cheating","Shopping"],answer:1},
+{question:"A scandal is…",choices:["A secret","A shocking illegal event","A celebration"],answer:1},
+{question:"Immoral means…",choices:["Ethical","Not ethical","Beautiful"],answer:1},
+{question:"A criminal organization is…",choices:["Legal business","Group committing crimes","School"],answer:1},
+{question:"Forgery means…",choices:["Fixing","Producing fake documents","Cleaning"],answer:1},
+{question:"Favouritism is giving opportunities to…",choices:["Everyone","Only friends","Scientists"],answer:1},
+{question:"Audit means…",choices:["Check financial accounts","Plant trees","Sell products"],answer:0},
+{question:"Consumers are…",choices:["Buyers","Sellers","Factories"],answer:0},
+{question:"Products refer to…",choices:["People","Goods","Laws"],answer:1},
+{question:"Companies aim to make…",choices:["Profits","Weapons","Beaches"],answer:0},
+{question:"A lobby is a group that…",choices:["Influences decisions","Builds houses","Plays music"],answer:0},
+{question:"Illegal trade means…",choices:["Allowed business","Forbidden business","Small business"],answer:1},
+{question:"Ethics refers to…",choices:["Bad actions","Moral principles","Fashion"],answer:1},
+{question:"A fake brand is…",choices:["Original","Counterfeit","Expensive"],answer:1},
+{question:"Child labour means…",choices:["School","Children working illegally","Kids playing"],answer:1},
+{question:"Stringent standards are…",choices:["Loose","Difficult and strict","Boring"],answer:1},
+{question:"Property is…",choices:["Something you own","A feeling","A drink"],answer:0},
+{question:"Speculators are…",choices:["Fight corruption","Trade for quick profit","Clean streets"],answer:1},
+{question:"Hide means…",choices:["Show","Conceal","Buy"],answer:1},
+{question:"Disguise means…",choices:["Reveal","Hide identity","Explain"],answer:1},
+{question:"Goods are…",choices:["Products","Trees","Buildings"],answer:0},
+{question:"Cheating customers is…",choices:["Ethical","Unethical","Helpful"],answer:1},
+{question:"Laws are made to…",choices:["Confuse people","Protect society","Decorate cities"],answer:1},
+{question:"Ill-gotten gains mean…",choices:["Money earned morally","Money earned illegally","Money from gifts"],answer:1}
+];
+
+  flashcards = [
+    {front:"Ill-gotten gains never prosper", back:"المكاسب الحرام لا تدوم - Wealth obtained dishonestly will not bring lasting success"},
+    {front:"What are 'ill-gotten gains'?", back:"Money or wealth acquired through dishonest, illegal, or unethical means"},
+    {front:"Why won't ill-gotten gains prosper?", back:"Because dishonesty leads to guilt, legal consequences, and loss of trust"},
+    {front:"Moral lesson", back:"Always earn your living through honest and ethical means"},
+    {front:"Alternative saying", back:"'Easy come, easy go' or 'Crime doesn't pay'"},
+    {front:"Honesty", back:"Being truthful and fair in all dealings - النزاهة"},
+    {front:"Integrity", back:"Having strong moral principles and doing the right thing even when no one is watching"},
+    {front:"Example of honest gain", back:"Earning money through hard work, fair business practices, and ethical behavior"}
+  ];
+
+  saveData();
+  refreshFlashcard();
+  alert("Sample data loaded with 'Ill-gotten gains never prosper' theme ✔️");
 }
 
-function clearAll(){ triviaQuestions=[]; flashcards=[]; alert("Cleared!"); }
+function clearAll(){
+  if(confirm("Delete ALL saved data?")){
+    localStorage.clear();
+    triviaQuestions=[];
+    flashcards=[];
+    score=0;
+    document.getElementById("score").textContent=0;
+    refreshFlashcard();
+  }
+}
 
+/* بداية */
+refreshFlashcard();
 </script>
+
 </body>
 </html>
