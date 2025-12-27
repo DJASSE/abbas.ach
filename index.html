@@ -1,639 +1,1261 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Djasser — Trivia & Flashcards FOR YOU TEACHER</title>
-<style>
-/* ---------- ROOT & RESET ---------- */
-:root{
-  --bg1:#ffebcd;
-  --bg2:#fff7e6;
-  --accent:#ff6b6b;
-  --accent2:#4f46e5;
-  --card:#fff;
-  --muted:#64748b;
-  --glass: rgba(255,255,255,0.7);
-  --radius:20px;
-}
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%}
-body{
-  font-family: "Segoe UI", Roboto, Arial, sans-serif;
-  background: radial-gradient(circle at 10% 10%, #fffef8 0%, var(--bg1) 40%, var(--bg2) 100%);
-  color:#0f172a;
-  -webkit-font-smoothing:antialiased;
-  padding:18px;
-  direction:rtl;
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام إدارة سوبرماركت من برمج جاسر اشلاف - Offline</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-/* ---------- HEADER ---------- */
-.header{
-  display:flex;
-  gap:16px;
-  align-items:center;
-  justify-content:space-between;
-  margin-bottom:18px;
-}
-.brand{
-  display:flex;
-  gap:12px;
-  align-items:center;
-}
-.logo{
-  width:68px;height:68px;border-radius:16px;
-  background:linear-gradient(135deg,#ff8a65,#ff6b6b);
-  display:flex;align-items:center;justify-content:center;
-  box-shadow:0 8px 30px rgba(79,70,229,0.12), inset 0 -6px 12px rgba(255,255,255,0.08);
-  transform:rotate(-8deg);
-}
-.logo svg{width:44px;height:44px;filter: drop-shadow(0 6px 14px rgba(0,0,0,0.08))}
-.title{
-  font-size:1.6rem;font-weight:800;color:var(--accent2);
-}
-.subtitle{color:var(--muted);font-size:0.95rem}
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
 
-/* ---------- NAV ---------- */
-.nav{
-  display:flex;gap:10px;align-items:center;
-}
-.tab{
-  padding:10px 16px;border-radius:14px;background:var(--glass);
-  border:1px solid rgba(15,23,42,0.04);cursor:pointer;font-weight:600;
-  transition:all .22s;
-}
-.tab.active{
-  background:linear-gradient(90deg,#6a5af9,#4f46e5);
-  color:#fff;box-shadow:0 8px 30px rgba(79,70,229,0.15);
-  transform:translateY(-4px);
-}
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
 
-/* ---------- LAYOUT ---------- */
-.container{
-  display:grid;
-  grid-template-columns: 1fr 360px;
-  gap:20px;
-  align-items:start;
-  margin-top:12px;
-}
-@media (max-width:980px){
-  .container{grid-template-columns:1fr; padding-bottom:60px}
-}
+        .header {
+            background: linear-gradient(45deg, #FF6B6B, #4ECDC4);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
 
-/* ---------- MAIN CARD ---------- */
-.panel{
-  background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,255,255,0.82));
-  padding:18px;border-radius:20px;box-shadow:0 12px 40px rgba(15,23,42,0.06);
-  position:relative; overflow:hidden;
-}
-.panel h2{margin-bottom:10px;color:var(--accent2)}
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
 
-/* ---------- QUESTION CARD (big) ---------- */
-.qcard{
-  background:var(--card); border-radius:18px; padding:22px;
-  box-shadow:0 20px 40px rgba(12,18,44,0.06);
-  display:flex; gap:18px; align-items:center;
-  transition: transform .35s ease, box-shadow .35s;
-}
-.qcard:hover{ transform:translateY(-6px); box-shadow:0 26px 58px rgba(12,18,44,0.09) }
-.qleft{flex:1}
-.qmeta{display:flex;gap:8px;align-items:center;margin-bottom:8px}
-.qlevel{font-weight:700;color:var(--accent2)}
-.qemoji{font-size:36px;margin-left:8px}
-.qtext{font-size:1.25rem;font-weight:700;margin-bottom:12px}
-.answers{display:flex;flex-wrap:wrap;gap:10px}
-.choice{
-  background:linear-gradient(180deg,#f8fafc,#ffffff); border-radius:14px;
-  padding:10px 14px; cursor:pointer; min-width:140px; text-align:center;
-  border:2px solid rgba(15,23,42,0.03); transition:transform .18s, box-shadow .18s, background .18s;
-  font-weight:600;
-}
-.choice:hover{ transform:translateY(-4px); box-shadow:0 10px 24px rgba(79,70,229,0.08) }
-.choice.correct{ background:linear-gradient(90deg,#a7f3d0,#06d6a0); color:#064e3b; border-color:rgba(6,214,160,0.12) }
-.choice.wrong{ background:linear-gradient(90deg,#ffd6d6,#ff9a9a); color:#6b0b0b; border-color:rgba(239,71,111,0.12) }
+        .nav-tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+        }
 
-/* ---------- RIGHT SIDEBAR ---------- */
-.sidebar{
-  position:sticky; top:24px;
-}
-.panel.small{padding:14px}
-.score{
-  background:linear-gradient(90deg,#ffd166,#ff6b6b);
-  color:#fff;padding:12px;border-radius:14px;font-weight:800;text-align:center;
-  box-shadow:0 8px 30px rgba(255,107,107,0.12);
-}
-.ladder{margin-top:12px;border-radius:12px;padding:8px;background:linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.4));}
-.ladder .row{display:flex;justify-content:space-between;padding:8px 10px;border-radius:8px;margin-bottom:6px;font-weight:700}
-.ladder .row.guarantee{background:linear-gradient(90deg,#e0f2fe,#bae6fd); color:#0f172a}
+        .tab-btn {
+            flex: 1;
+            padding: 15px;
+            background: none;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+        }
 
-/* ---------- FLASH / CONFETTI layers ---------- */
-.canvas{
-  position:absolute; left:0; top:0; right:0; bottom:0; pointer-events:none;
-}
+        .tab-btn.active {
+            background: white;
+            border-bottom-color: #007bff;
+            color: #007bff;
+            font-weight: bold;
+        }
 
-/* ---------- FLASHCARD (small preview) ---------- */
-.smallcard{
-  background:linear-gradient(180deg,#ffffff,#fff8f0); border-radius:12px;padding:12px;text-align:center;
-  box-shadow:0 10px 30px rgba(15,23,42,0.04); margin-top:12px;
-}
-.smallcard .txt{font-weight:700}
+        .tab-content {
+            display: none;
+            padding: 30px;
+        }
 
-/* ---------- FOOTER ACTIONS ---------- */
-.actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
-.btn{
-  padding:10px 14px;border-radius:12px;border:none;cursor:pointer;font-weight:700;
-  transition:all .18s; box-shadow:0 8px 20px rgba(15,23,42,0.04);
-}
-.btn.primary{background:linear-gradient(90deg,#6a5af9,#4f46e5);color:#fff}
-.btn.warn{background:linear-gradient(90deg,#ffd166,#ff6b6b);color:#111}
-.btn.ghost{background:transparent;border:1px dashed rgba(15,23,42,0.08);color:var(--muted)}
+        .tab-content.active {
+            display: block;
+        }
 
-/* ---------- MASCOT (SVG) ---------- */
-.mascot{
-  width:120px;height:120px;border-radius:16px;background:linear-gradient(180deg,#fff,#fff0);
-  display:flex;align-items:center;justify-content:center;
-  box-shadow:0 10px 30px rgba(79,70,229,0.06);
-}
+        .form-group {
+            margin-bottom: 20px;
+        }
 
-/* ---------- ANIMATIONS ---------- */
-@keyframes floaty {
-  0%{ transform: translateY(0px)}
-  50%{ transform: translateY(-8px)}
-  100%{ transform: translateY(0px)}
-}
-.mascot{animation:floaty 3.6s ease-in-out infinite}
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
 
-/* ---------- RESPONSIVE ---------- */
-@media (max-width:600px){
-  .qtext{font-size:1.05rem}
-  .answers{justify-content:center}
-  .container{grid-template-columns:1fr}
-  .logo{transform:none}
-}
-</style>
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+            margin: 5px;
+        }
+
+        .btn-primary { background: #007bff; color: white; }
+        .btn-primary:hover { background: #0056b3; transform: translateY(-2px); }
+
+        .btn-success { background: #28a745; color: white; }
+        .btn-success:hover { background: #1e7e34; transform: translateY(-2px); }
+
+        .btn-danger { background: #dc3545; color: white; }
+        .btn-danger:hover { background: #c82333; transform: translateY(-2px); }
+
+        .btn-warning { background: #ffc107; color: #212529; }
+        .btn-warning:hover { background: #e0a800; transform: translateY(-2px); }
+
+        .table-container {
+            overflow-x: auto;
+            margin-top: 20px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: right;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #495057;
+            position: sticky;
+            top: 0;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .alert {
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .alert-danger { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .sale-item {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .total-section {
+            background: #e9ecef;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .nav-tabs {
+                flex-direction: column;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+        }
+
+        .low-stock {
+            background-color: #fff3cd !important;
+            color: #856404 !important;
+        }
+
+        .out-stock {
+            background-color: #f8d7da !important;
+            color: #721c24 !important;
+        }
+
+        .print-btn {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .print-btn:hover {
+            background: #138496;
+        }
+    </style>
 </head>
 <body>
-
-<!-- CANVAS FOR PARTICLES -->
-<canvas id="particles" class="canvas"></canvas>
-
-<div class="header">
-  <div class="brand">
-    <div class="logo" title="Djasser">
-      <!-- little rocket SVG -->
-      <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-        <g fill="#fff">
-          <path d="M12 52c0-7 12-20 36-24l-6 6 6 6c-15 2-36 12-36 12z" opacity="0.08"/>
-          <path d="M38 8c4.5 4.5 6 10 6 10s-6 1.5-10 6c-3 3-5 7-6 10s-7-3-10-6C14.5 26 16 20 20.5 15.5 25 11 32 10 38 8z" fill="#fff"/>
-        </g>
-      </svg>
-    </div>
-    <div>
-      <div class="title">Djasser travia for the teacther</div>
-      <div class="subtitle">ألعب وتعلّم — أسئلة مأخوذة من الملخص الدراسي. :contentReference[oaicite:1]{index=1}</div>
-    </div>
-  </div>
-
-  <div class="nav">
-    <div class="tab active" data-tab="play">العب</div>
-    <div class="tab" data-tab="flash">فلاش كارد</div>
-    <div class="tab" data-tab="settings">الإعدادات</div>
-  </div>
-</div>
-
-<div class="container">
-
-  <!-- MAIN AREA -->
-  <div class="panel" id="mainPanel">
-    <h2 id="panelTitle">🎯 سؤال اليوم</h2>
-
-    <div class="qcard" id="qcard">
-      <div class="qleft">
-        <div class="qmeta">
-          <div class="qlevel" id="qlevel">سؤال 1 / 15</div>
-          <div class="qemoji" id="qemoji">🧠</div>
+    <div class="container">
+        <div class="header">
+            <h1>🛒 نظام إدارة سوبرماركت</h1>
+            <p>نظام شامل يعمل بدون إنترنت - جميع البيانات محفوظة محلياً</p>
         </div>
 
-        <div class="qtext" id="qtext">press start to show quistions</div>
-
-        <div class="answers" id="answers"></div>
-
-        <div class="actions">
-          <button class="btn primary" id="startBtn">start game</button>
-          <button class="btn ghost" id="quitBtn">restart</button>
-          <button class="btn warn" id="skipBtn">skipe the same prise</button>
-        </div>
-      </div>
-
-      <div style="width:160px;display:flex;flex-direction:column;align-items:center;">
-        <div class="mascot" id="mascot">
-          <!-- simple friendly mascot (SVG face) -->
-          <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <linearGradient id="g1" x1="0" x2="1">
-                <stop offset="0" stop-color="#ffd166"/><stop offset="1" stop-color="#ff6b6b"/>
-              </linearGradient>
-            </defs>
-            <rect x="6" y="6" rx="16" width="108" height="108" fill="url(#g1)" opacity="0.95"/>
-            <g transform="translate(18,30)">
-              <circle cx="24" cy="18" r="8" fill="#fff"/>
-              <circle cx="72" cy="18" r="8" fill="#fff"/>
-              <ellipse cx="48" cy="60" rx="26" ry="12" fill="#fff"/>
-              <circle cx="48" cy="54" r="6" fill="#ff6b6b"/>
-            </g>
-          </svg>
+        <div class="nav-tabs">
+            <button class="tab-btn active" onclick="showTab('products')">إدارة المنتجات</button>
+            <button class="tab-btn" onclick="showTab('inventory')">المخزون</button>
+            <button class="tab-btn" onclick="showTab('sales')">المبيعات</button>
+            <button class="tab-btn" onclick="showTab('suppliers')">الموردين</button>
+            <button class="tab-btn" onclick="showTab('customers')">العملاء</button>
+            <button class="tab-btn" onclick="showTab('reports')">التقارير</button>
         </div>
 
-        <div class="smallcard" style="width:140px">
-          <div class="txt">your mony</div>
-          <div style="font-size:1.1rem;font-weight:900;margin-top:6px" id="prizeDisplay">0$</div>
+        <!-- تبويب إدارة المنتجات -->
+        <div id="products" class="tab-content active">
+            <h2>إدارة المنتجات</h2>
+            <div class="form-group">
+                <input type="text" id="productSearch" placeholder="ابحث عن منتج..." onkeyup="filterTable('productsTable', this.value)">
+            </div>
+            <form id="productForm">
+                <div class="form-group">
+                    <label>اسم المنتج:</label>
+                    <input type="text" id="productName" required>
+                </div>
+                <div class="form-group">
+                    <label>الكود:</label>
+                    <input type="text" id="productCode" required>
+                </div>
+                <div class="form-group">
+                    <label>السعر:</label>
+                    <input type="number" id="productPrice" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label>الكمية المتوفرة:</label>
+                    <input type="number" id="productQuantity" required>
+                </div>
+                <div class="form-group">
+                    <label>الحد الأدنى للمخزون:</label>
+                    <input type="number" id="productMinStock" value="5">
+                </div>
+                <div class="form-group">
+                    <label>الفئة:</label>
+                    <select id="productCategory">
+                        <option value="غذائي">غذائي</option>
+                        <option value="مشروبات">مشروبات</option>
+                        <option value="تنظيف">تنظيف</option>
+                        <option value="أخرى">أخرى</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">حفظ المنتج</button>
+                <button type="button" class="btn btn-warning" onclick="clearForm('productForm')">جديد</button>
+            </form>
+
+            <div class="table-container">
+                <table id="productsTable">
+                    <thead>
+                        <tr>
+                            <th>الكود</th>
+                            <th>الاسم</th>
+                            <th>السعر</th>
+                            <th>الكمية</th>
+                            <th>الحد الأدنى</th>
+                            <th>الفئة</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
         </div>
-      </div>
-    </div>
 
-    <!-- feedback area -->
-    <div id="feedback" style="margin-top:12px;color:var(--muted)"></div>
+        <!-- تبويب المخزون -->
+        <div id="inventory" class="tab-content">
+            <h2>إدارة المخزون</h2>
+            <div class="form-group">
+                <input type="text" id="inventorySearch" placeholder="ابحث في المخزون..." onkeyup="filterTable('inventoryTable', this.value)">
+            </div>
+            <form id="inventoryForm">
+                <div class="form-group">
+                    <label>كود المنتج:</label>
+                    <input type="text" id="inventoryProductCode" required>
+                </div>
+                <div class="form-group">
+                    <label>كمية الإضافة:</label>
+                    <input type="number" id="addQuantity" required>
+                </div>
+                <div class="form-group">
+                    <label>ملاحظات:</label>
+                    <textarea id="inventoryNotes" rows="3"></textarea>
+                </div>
+                <button type="submit" class="btn btn-success">إضافة للمخزون</button>
+            </form>
 
-  </div>
-
-  <!-- SIDEBAR -->
-  <div class="sidebar">
-    <div class="panel small">
-      <div style="display:flex;align-items:center;justify-content:space-between">
-        <div>
-          <div style="font-size:0.9rem;color:var(--muted)">your score</div>
-          <div class="score" id="scoreDisplay">0$</div>
+            <div class="table-container">
+                <table id="inventoryTable">
+                    <thead>
+                        <tr>
+                            <th>الكود</th>
+                            <th>الاسم</th>
+                            <th>الكمية الحالية</th>
+                            <th>الحد الأدنى</th>
+                            <th>الحالة</th>
+                            <th>آخر تحديث</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
         </div>
-      </div>
 
-      <div class="ladder" id="ladder">
-        <!-- ladder rows will be injected -->
-      </div>
+        <!-- تبويب المبيعات -->
+        <div id="sales" class="tab-content">
+            <h2>تسجيل المبيعات</h2>
+            <div class="form-group">
+                <input type="text" id="saleProductSearch" placeholder="ابحث عن المنتج بالكود أو الاسم..." onkeyup="searchProductForSale(this.value)">
+            </div>
+            <div id="saleItems"></div>
+            <div class="total-section">
+                <div class="total-row">
+                    <span>المجموع:</span>
+                    <span id="subtotal">0.00 د.ج</span>
+                </div>
+                <div class="total-row">
+                    <span>الضريبة (19%):</span>
+                    <span id="tax">0.00 د.ج</span>
+                </div>
+                <hr>
+                <div class="total-row" style="font-size: 22px; color: #28a745;">
+                    <span>الإجمالي:</span>
+                    <span id="total">0.00 د.ج</span>
+                </div>
+            </div>
+            <div style="margin-top: 20px;">
+                <input type="text" id="customerNameSale" placeholder="اسم العميل (اختياري)">
+                <button class="btn btn-primary print-btn" onclick="completeSale()">إكمال البيع وطباعة الفاتورة</button>
+                <button class="btn btn-warning" onclick="clearSale()">إلغاء</button>
+            </div>
+        </div>
 
-      <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
-        <button class="btn primary" id="showRules">the rulse</button>
-        <button class="btn ghost" id="loadFromFile">أعد تحميل الأسئلة</button>
-      </div>
+        <!-- تبويب الموردين -->
+        <div id="suppliers" class="tab-content">
+            <h2>إدارة الموردين</h2>
+            <div class="form-group">
+                <input type="text" id="supplierSearch" placeholder="ابحث عن مورد..." onkeyup="filterTable('suppliersTable', this.value)">
+            </div>
+            <form id="supplierForm">
+                <div class="form-group">
+                    <label>اسم المورد:</label>
+                    <input type="text" id="supplierName" required>
+                </div>
+                <div class="form-group">
+                    <label>رقم الهاتف:</label>
+                    <input type="tel" id="supplierPhone">
+                </div>
+                <div class="form-group">
+                    <label>العنوان:</label>
+                    <textarea id="supplierAddress" rows="3"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">حفظ المورد</button>
+                <button type="button" class="btn btn-warning" onclick="clearForm('supplierForm')">جديد</button>
+            </form>
+
+            <div class="table-container">
+                <table id="suppliersTable">
+                    <thead>
+                        <tr>
+                            <th>الاسم</th>
+                            <th>الهاتف</th>
+                            <th>العنوان</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- تبويب العملاء -->
+        <div id="customers" class="tab-content">
+            <h2>إدارة العملاء</h2>
+            <div class="form-group">
+                <input type="text" id="customerSearch" placeholder="ابحث عن عميل..." onkeyup="filterTable('customersTable', this.value)">
+            </div>
+            <form id="customerForm">
+                <div class="form-group">
+                    <label>اسم العميل:</label>
+                    <input type="text" id="customerName" required>
+                </div>
+                <div class="form-group">
+                    <label>رقم الهاتف:</label>
+                    <input type="tel" id="customerPhone">
+                </div>
+                <div class="form-group">
+                    <label>العنوان:</label>
+                    <textarea id="customerAddress" rows="3"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">حفظ العميل</button>
+                <button type="button" class="btn btn-warning" onclick="clearForm('customerForm')">جديد</button>
+            </form>
+
+            <div class="table-container">
+                <table id="customersTable">
+                    <thead>
+                        <tr>
+                            <th>الاسم</th>
+                            <th>الهاتف</th>
+                            <th>العنوان</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- تبويب التقارير -->
+        <div id="reports" class="tab-content">
+            <h2>التقارير</h2>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px;">
+                <button class="btn btn-primary" onclick="generateReport('daily')">تقرير يومي</button>
+                <button class="btn btn-primary" onclick="generateReport('monthly')">تقرير شهري</button>
+                <button class="btn btn-success" onclick="exportToCSV('sales')">تصدير مبيعات CSV</button>
+                <button class="btn btn-success" onclick="exportToCSV('products')">تصدير منتجات CSV</button>
+            </div>
+            <div id="reportContent"></div>
+        </div>
     </div>
 
-    <div class="panel small" style="margin-top:12px;">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <div style="font-weight:800">Flashcards</div>
-        <div style="color:var(--muted);font-size:0.9rem" id="cardsCount">0</div>
-      </div>
-      <div style="margin-top:10px">
-        <button class="btn primary" id="openFlash">flash cards</button>
-        <button class="btn ghost" id="shuffleFlashBtn">mix cards</button>
-      </div>
+    <!-- نافذة الفاتورة -->
+    <div id="invoiceModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('invoiceModal')">&times;</span>
+            <div id="invoiceContent"></div>
+            <button class="btn btn-primary print-btn" onclick="printInvoice()">طباعة الفاتورة</button>
+        </div>
     </div>
-  </div>
 
-</div>
+    <script>
+        // ========================================
+        // نظام التخزين المحلي باستخدام localStorage
+        // ========================================
+        class SupermarketDB {
+            constructor() {
+                this.db = {
+                    products: [],
+                    suppliers: [],
+                    customers: [],
+                    sales: [],
+                    inventoryLog: []
+                };
+                this.loadData();
+            }
 
-<!-- FLASHCARDS PANEL (hidden, overlay style) -->
-<div id="flashOverlay" style="position:fixed; inset:0;background:rgba(2,6,23,0.55); display:none;align-items:center;justify-content:center;z-index:40;">
-  <div style="width:92%;max-width:720px;background:#fff;border-radius:18px;padding:18px;box-shadow:0 30px 80px rgba(2,6,23,0.6);">
-    <div style="display:flex;justify-content:space-between;align-items:center">
-      <h3 style="margin:0;color:var(--accent2)">🧠 Flashcards</h3>
-      <div style="display:flex;gap:8px">
-        <button class="btn ghost" id="closeFlash">close</button>
-        <button class="btn primary" id="flipAll">flip</button>
-      </div>
-    </div>
-    <div id="flashAreaLarge" style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;justify-content:center"></div>
-  </div>
-</div>
+            loadData() {
+                const saved = localStorage.getItem('supermarket_db');
+                if (saved) {
+                    this.db = { ...this.db, ...JSON.parse(saved) };
+                }
+            }
 
-<script>
-const triviaQuestions = [
-{question:"What does corruption mean?",choices:["Honesty","Dishonesty","Friendship"],answer:1},
-{question:"Bribery is…",choices:["Giving money illegally","Paying taxes","Helping the poor"],answer:0},
-{question:"Embezzlement means…",choices:["Stealing money you manage","Borrowing money","Donating money"],answer:0},
-{question:"Counterfeit products are…",choices:["Original","Fake","Organic"],answer:1},
-{question:"Fraud means…",choices:["Truth","Cheating","Working hard"],answer:1},
-{question:"Smuggling refers to…",choices:["Legal transport","Illegal transport","Air travel"],answer:1},
-{question:"Illegal means…",choices:["Allowed","Not allowed","Traditional"],answer:1},
-{question:"A whistleblower is…",choices:["Works in a bank","Reports corruption","Sells goods"],answer:1},
-{question:"Tax evasion means…",choices:["Paying extra taxes","Avoiding paying taxes illegally","Studying taxes"],answer:1},
-{question:"A bribe is…",choices:["A gift","Illegal money","A fine"],answer:1},
-{question:"Nepotism means giving jobs to…",choices:["Best candidates","Strangers","Relatives"],answer:2},
-{question:"Unethical means…",choices:["Following rules","Not following moral rules","Being brave"],answer:1},
-{question:"Opposite of honest?",choices:["dis-","un-","il-"],answer:0},
-{question:"Counterfeiting money is…",choices:["Legal","Forging currency","Online banking"],answer:1},
-{question:"Transparency means…",choices:["Hiding facts","Being clear","Paying fines"],answer:1},
-{question:"Kickback is…",choices:["A sport action","Illegal payment","A receipt"],answer:1},
-{question:"Fake invoices are…",choices:["Correct bills","Incorrect documents","Free services"],answer:1},
-{question:"A genuine product is…",choices:["Fake","Original","Cheap"],answer:1},
-{question:"Piracy refers to…",choices:["Downloading legally","Stealing creative works","Sailing ships"],answer:1},
-{question:"Deceive means…",choices:["Protect","Lie","Fix"],answer:1},
-{question:"Companies must follow…",choices:["Weather rules","Code of ethics","Sport laws"],answer:1},
-{question:"Severe laws are…",choices:["Very soft","Very strict","Very old"],answer:1},
-{question:"Responsibility means…",choices:["Duty","Luck","Confidence"],answer:0},
-{question:"Money laundering means…",choices:["Cleaning coins","Hiding illegal money","Donating money"],answer:1},
-{question:"A moral action is…",choices:["Wrong","Ethical","Illegal"],answer:1},
-{question:"Imitate means…",choices:["Create","Copy","Destroy"],answer:1},
-{question:"Deception means…",choices:["Honesty","Cheating","Shopping"],answer:1},
-{question:"A scandal is…",choices:["A secret","A shocking illegal event","A celebration"],answer:1},
-{question:"Immoral means…",choices:["Ethical","Not ethical","Beautiful"],answer:1},
-{question:"A criminal organization is…",choices:["Legal business","Group committing crimes","School"],answer:1},
-{question:"Forgery means…",choices:["Fixing","Producing fake documents","Cleaning"],answer:1},
-{question:"Favouritism is giving opportunities to…",choices:["Everyone","Only friends","Scientists"],answer:1},
-{question:"Audit means…",choices:["Check financial accounts","Plant trees","Sell products"],answer:0},
-{question:"Consumers are…",choices:["Buyers","Sellers","Factories"],answer:0},
-{question:"Products refer to…",choices:["People","Goods","Laws"],answer:1},
-{question:"Companies aim to make…",choices:["Profits","Weapons","Beaches"],answer:0},
-{question:"A lobby is a group that…",choices:["Influences decisions","Builds houses","Plays music"],answer:0},
-{question:"Illegal trade means…",choices:["Allowed business","Forbidden business","Small business"],answer:1},
-{question:"Ethics refers to…",choices:["Bad actions","Moral principles","Fashion"],answer:1},
-{question:"A fake brand is…",choices:["Original","Counterfeit","Expensive"],answer:1},
-{question:"Child labour means…",choices:["School","Children working illegally","Kids playing"],answer:1},
-{question:"Stringent standards are…",choices:["Loose","Difficult and strict","Boring"],answer:1},
-{question:"Property is…",choices:["Something you own","A feeling","A drink"],answer:0},
-{question:"Speculators are…",choices:["Fight corruption","Trade for quick profit","Clean streets"],answer:1},
-{question:"Hide means…",choices:["Show","Conceal","Buy"],answer:1},
-{question:"Disguise means…",choices:["Reveal","Hide identity","Explain"],answer:1},
-{question:"Goods are…",choices:["Products","Trees","Buildings"],answer:0},
-{question:"Cheating customers is…",choices:["Ethical","Unethical","Helpful"],answer:1},
-{question:"Laws are made to…",choices:["Confuse people","Protect society","Decorate cities"],answer:1},
-{question:"Ill-gotten gains mean…",choices:["Money earned morally","Money earned illegally","Money from gifts"],answer:1}
-];
+            saveData() {
+                localStorage.setItem('supermarket_db', JSON.stringify(this.db));
+            }
 
-// money ladder
-const moneyLadder = [100,200,300,500,1000,2000,4000,8000,16000,32000,64000,125000,250000,500000,1000000];
+            // منتجات
+            addProduct(product) {
+                const id = Date.now().toString();
+                const newProduct = { id, ...product, createdAt: new Date().toISOString() };
+                this.db.products.push(newProduct);
+                this.saveData();
+                return newProduct;
+            }
 
-/* ==========================================
-   UI state
-   ========================================== */
-let selectedQuestions = [];
-let currentIndex = 0;
-let currentPrize = 0;
-let score = 0;
-let canAnswer = false;
+            updateProduct(id, updates) {
+                const index = this.db.products.findIndex(p => p.id === id);
+                if (index !== -1) {
+                    this.db.products[index] = { ...this.db.products[index], ...updates };
+                    this.saveData();
+                    return true;
+                }
+                return false;
+            }
 
-/* ===== helpers ===== */
-function $(id){ return document.getElementById(id) }
-function rndShuffle(arr){ // Fisher-Yates
-  let a = arr.slice();
-  for(let i=a.length-1;i>0;i--){
-    const j = Math.floor(Math.random()*(i+1));
-    [a[i],a[j]]=[a[j],a[i]];
-  }
-  return a;
-}
+            deleteProduct(id) {
+                this.db.products = this.db.products.filter(p => p.id !== id);
+                this.saveData();
+            }
 
-/* ===== map tags to emoji ===== */
-const tagEmoji = {
-  ethics:'⚖️', conditionals:'🔮', quantifiers:'🔢', cause:'➡️',
-  grammar:'✍️', vocab:'📚', astronomy:'🪐', wish:'😔',
-  advice:'💡', modals:'❓'
-};
+            getProducts() {
+                return this.db.products;
+            }
 
-/* ===== build ladder UI ===== */
-function renderLadder(){
-  const container = $('ladder'); container.innerHTML='';
-  for(let i=moneyLadder.length-1;i>=0;i--){
-    const div = document.createElement('div');
-    div.className='row' + ((i===4||i===9) ? ' guarantee' : '');
-    div.innerHTML = `<div>#${i+1}</div><div style="font-weight:900">${moneyLadder[i].toLocaleString()}$</div>`;
-    container.appendChild(div);
-  }
-}
-renderLadder();
+            // مخزون
+            updateInventory(productCode, quantity, notes = '') {
+                const product = this.db.products.find(p => p.code === productCode);
+                if (product) {
+                    product.quantity = (parseFloat(product.quantity) || 0) + parseFloat(quantity);
+                    product.updatedAt = new Date().toISOString();
+                    
+                    this.db.inventoryLog.push({
+                        id: Date.now().toString(),
+                        productCode,
+                        productName: product.name,
+                        quantity,
+                        notes,
+                        date: new Date().toISOString()
+                    });
+                    this.saveData();
+                    return product;
+                }
+                return null;
+            }
 
-/* ===== render question ===== */
-function renderQuestion(){
-  canAnswer = true;
-  const q = selectedQuestions[currentIndex];
-  if(!q) return;
-  $('qlevel').textContent = `سؤال ${currentIndex+1} / 15`;
-  $('qemoji').textContent = tagEmoji[q.tag] || '🧠';
-  $('qtext').textContent = q.question;
-  const answers = $('answers'); answers.innerHTML='';
-  q.choices.forEach((ch,idx)=>{
-    const b = document.createElement('div');
-    b.className='choice';
-    b.textContent = ch;
-    b.onclick = () => selectAnswer(idx,b);
-    answers.appendChild(b);
-  });
-  // update displays
-  $('prizeDisplay').textContent = (currentPrize ? currentPrize.toLocaleString() + '$' : '—');
-  $('scoreDisplay').textContent = (score? score.toLocaleString()+'$' : '0$');
-  $('feedback').textContent = '';
-}
+            // مبيعات
+            addSale(sale) {
+                const id = Date.now().toString();
+                const newSale = { id, ...sale, date: new Date().toISOString() };
+                this.db.sales.push(newSale);
+                
+                // تحديث المخزون
+                sale.items.forEach(item => {
+                    const product = this.db.products.find(p => p.code === item.code);
+                    if (product) {
+                        product.quantity -= item.quantity;
+                    }
+                });
+                
+                this.saveData();
+                return newSale;
+            }
 
-/* ===== answer logic ===== */
-function selectAnswer(idx, btnElement){
-  if(!canAnswer) return;
-  canAnswer = false;
-  const q = selectedQuestions[currentIndex];
-  const buttons = Array.from(document.querySelectorAll('.choice'));
+            getSales() {
+                return this.db.sales;
+            }
 
-  if(idx === q.answer){
-    // إجابة صحيحة
-    currentPrize = moneyLadder[currentIndex]; 
-    score = currentPrize;
-    btnElement.classList.add('correct');
-    playSound('win');
-    showConfetti();
-    $('feedback').textContent = `✅ إجابة صحيحة! ربحك الحالي: ${currentPrize.toLocaleString()}$`;
-  } else {
-    // إجابة خاطئة
-    btnElement.classList.add('wrong');
-    buttons[q.answer].classList.add('correct'); // كشف الإجابة الصحيحة
+            // موردون وعملاء
+            addSupplier(supplier) {
+                const id = Date.now().toString();
+                const newSupplier = { id, ...supplier };
+                this.db.suppliers.push(newSupplier);
+                this.saveData();
+                return newSupplier;
+            }
 
-    // تعديل قانون الخسارة
-    if(currentIndex < 5) score = 0;          // قبل السؤال الخامس
-    else if(currentIndex < 10) score = 1000; // بين السؤال 5 و10
-    else score = 32000;                       // بعد السؤال 10
+            updateSupplier(id, updates) {
+                const index = this.db.suppliers.findIndex(s => s.id === id);
+                if (index !== -1) {
+                    this.db.suppliers[index] = { ...this.db.suppliers[index], ...updates };
+                    this.saveData();
+                    return true;
+                }
+                return false;
+            }
 
-    playSound('lose');
-    $('feedback').textContent = `❌ خطأ! جائزتك النهائية بعد الضمان: ${score.toLocaleString()}$`;
-    
-    // نهاية اللعبة بعد الخطأ
-    setTimeout(()=>{
-      alert(`🏁 انتهت اللعبة!\nجائزتك النهائية: ${score.toLocaleString()}$`);
-      resetGame();
-    }, 500);
-    return; // توقف عن الانتقال للسؤال التالي
-  }
+            deleteSupplier(id) {
+                this.db.suppliers = this.db.suppliers.filter(s => s.id !== id);
+                this.saveData();
+            }
 
-  // تحديث العرض
-  $('scoreDisplay').textContent = score ? score.toLocaleString()+'$' : '0$';
-  $('prizeDisplay').textContent = (currentPrize ? currentPrize.toLocaleString()+'$' : '—');
+            getSuppliers() {
+                return this.db.suppliers;
+            }
 
-  // الانتقال للسؤال التالي بعد الإجابة الصحيحة
-  setTimeout(()=>{
-    currentIndex++;
-    if(currentIndex < selectedQuestions.length){
-      renderQuestion();
-    } else {
-      alert(`🎉 انتهت اللعبة! جائزتك النهائية: ${score.toLocaleString()}$`);
-      resetGame();
-    }
-  }, 900);
-}
+            addCustomer(customer) {
+                const id = Date.now().toString();
+                const newCustomer = { id, ...customer };
+                this.db.customers.push(newCustomer);
+                this.saveData();
+                return newCustomer;
+            }
 
-function startGame(){
-  // pick 15 random questions from pool (or all if pool < 15)
-  const pool = triviaQuestions;
-  if(pool.length < 15){
-    alert('قاعدة الأسئلة تحتاج على الأقل 15 سؤالاً. أعد تحميل الملف أو أضف أسئلة.');
-    return;
-  }
-  selectedQuestions = rndShuffle(pool).slice(0,15);
-  currentIndex = 0; currentPrize = 0; score = 0;
-  $('startBtn').textContent = 'قيد اللعب...';
-  $('startBtn').disabled = true;
-  renderQuestion();
-}
-function resetGame(){
-  $('startBtn').textContent = 'ابدأ اللعبة';
-  $('startBtn').disabled = false;
-  selectedQuestions = [];
-  currentIndex = 0;
-  currentPrize = 0;
-  score = 0;
-  $('qtext').textContent = 'اضغط على "ابدأ اللعبة" لعرض الأسئلة';
-  $('answers').innerHTML='';
-  $('prizeDisplay').textContent = '—';
-  $('scoreDisplay').textContent = '0$';
-  $('feedback').textContent = '';
-}
-function skipQuestion(){
-  if(!selectedQuestions.length) return;
-  // keep currentPrize unchanged (user chose to skip)
-  currentIndex++;
-  if(currentIndex < 15){
-    renderQuestion();
-  } else {
-    alert(`انتهت اللعبة. جائزتك: ${score.toLocaleString()}$`);
-    resetGame();
-  }
-}
+            updateCustomer(id, updates) {
+                const index = this.db.customers.findIndex(c => c.id === id);
+                if (index !== -1) {
+                    this.db.customers[index] = { ...this.db.customers[index], ...updates };
+                    this.saveData();
+                    return true;
+                }
+                return false;
+            }
 
-/* ===== flashcards UI ===== */
-let flashcards = [
-  { front:"Ill-gotten gains never prosper", back:"المكاسب الحرام لا تدوم — dishonest wealth doesn't last" },
-  { front:"Honesty", back:"Being truthful and fair in all dealings — النزاهة" },
-  { front:"Integrity", back:"Doing the right thing even when no one watches — النزاهة" },
-  { front:"Crime doesn't pay", back:"Dishonest behavior leads to failure — الجريمة لا تفيد" },
-];
-function openFlashOverlay(){
-  const overlay = $('flashOverlay'); overlay.style.display='flex';
-  const area = $('flashAreaLarge'); area.innerHTML='';
-  flashcards.forEach((c,i)=>{
-    const card = document.createElement('div');
-    card.style.width='220px'; card.style.height='140px';
-    card.style.borderRadius='14px'; card.style.boxShadow='0 8px 24px rgba(15,23,42,0.06)';
-    card.style.background='#fff'; card.style.padding='12px';
-    card.style.display='flex'; card.style.flexDirection='column'; card.style.justifyContent='center';
-    card.style.cursor='pointer'; card.style.margin='6px';
-    card.innerHTML = `<div style="font-weight:900;margin-bottom:6px">${c.front}</div><div style="color:${'#64748b'}">${c.back}</div>`;
-    area.appendChild(card);
-  });
-}
-function closeFlash(){ $('flashOverlay').style.display='none' }
+            deleteCustomer(id) {
+                this.db.customers = this.db.customers.filter(c => c.id !== id);
+                this.saveData();
+            }
 
-function playSound(name){
-  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  if(!audioCtx) return;
+            getCustomers() {
+                return this.db.customers;
+            }
 
-  const o1 = audioCtx.createOscillator();
-  const o2 = audioCtx.createOscillator();
-  const g = audioCtx.createGain();
-  g.gain.value = 0.08;
-  g.connect(audioCtx.destination);
+            // تقارير
+            getDailySales(date) {
+                const today = new Date(date);
+                const tomorrow = new Date(today);
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                
+                return this.db.sales.filter(sale => {
+                    const saleDate = new Date(sale.date);
+                    return saleDate >= today && saleDate < tomorrow;
+                });
+            }
 
-  if(name==='win'){
-    // صوت تصاعدي عند الإجابة الصحيحة
-    o1.type = 'triangle'; o1.frequency.value = 440;
-    o2.type = 'sine'; o2.frequency.value = 660;
-    o1.connect(g); o2.connect(g);
-    o1.start(); o2.start();
-    o1.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.5);
-    o2.frequency.exponentialRampToValueAtTime(1320, audioCtx.currentTime + 0.5);
-    setTimeout(()=>{ o1.stop(); o2.stop(); }, 500);
-  } else {
-    // صوت تنازلي عند الإجابة الخاطئة
-    o1.type = 'sawtooth'; o1.frequency.value = 440;
-    o2.type = 'square'; o2.frequency.value = 220;
-    o1.connect(g); o2.connect(g);
-    o1.start(); o2.start();
-    o1.frequency.exponentialRampToValueAtTime(110, audioCtx.currentTime + 0.6);
-    o2.frequency.exponentialRampToValueAtTime(55, audioCtx.currentTime + 0.6);
-    setTimeout(()=>{ o1.stop(); o2.stop(); }, 600);
-  }
-}
+            getMonthlySales(year, month) {
+                const start = new Date(year, month - 1, 1);
+                const end = new Date(year, month, 0);
+                
+                return this.db.sales.filter(sale => {
+                    const saleDate = new Date(sale.date);
+                    return saleDate >= start && saleDate <= end;
+                });
+            }
+        }
 
-/* ===== confetti (simple particles) ===== */
-const canvas = document.getElementById('particles');
-const ctx = canvas.getContext('2d');
-let W=innerWidth, H=innerHeight;
-canvas.width=W; canvas.height=H;
-let particles = [];
-function makeParticle(x,y){
-  const c = ['#ffd166','#06d6a0','#ffd6d6','#4f46e5','#ff6b6b'];
-  return {
-    x,y, vx:(Math.random()-0.5)*6, vy: (Math.random()*-6)-2,
-    r: 6 + Math.random()*6, col: c[Math.floor(Math.random()*c.length)], life: 80+Math.random()*60
-  };
-}
-function showConfetti(){
-  for(let i=0;i<40;i++) particles.push(makeParticle(W/2 + (Math.random()-0.5)*200, H/3 + 20));
-}
-function tickParticles(){
-  ctx.clearRect(0,0,W,H);
-  for(let i=particles.length-1;i>=0;i--){
-    let p = particles[i];
-    p.vy += 0.2; p.x += p.vx; p.y += p.vy; p.life--;
-    ctx.fillStyle = p.col;
-    ctx.fillRect(p.x, p.y, p.r, p.r*0.6);
-    if(p.life<=0 || p.y>H) particles.splice(i,1);
-  }
-  requestAnimationFrame(tickParticles);
-}
-tickParticles();
-window.addEventListener('resize', ()=>{ W=innerWidth; H=innerHeight; canvas.width=W; canvas.height=H; });
+        // تهيئة قاعدة البيانات
+        const db = new SupermarketDB();
 
-/* ===== event bindings ===== */
-$('startBtn').addEventListener('click', (e)=>{ startGame(); });
-$('quitBtn').addEventListener('click', (e)=>{ if(confirm('إrestart؟')) resetGame(); });
-$('skipBtn').addEventListener('click', (e)=>{ skipQuestion(); });
-document.querySelectorAll('.tab').forEach(el=>{
-  el.addEventListener('click', ()=> {
-    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-    el.classList.add('active');
-    const name = el.dataset.tab || el.textContent.trim();
-    if(name==='play' || el.textContent.includes('Trivia')) {
-      document.getElementById('mainPanel').scrollIntoView({behavior:'smooth'});
-    } else if(el.dataset.tab === 'flash') {
-      openFlashOverlay();
-    } else {
-      alert('لوحة الإعدادات: يمكنك تعديل الأسئلة أو الألوان لاحقًا.');
-    }
-  });
-});
-$('openFlash').addEventListener('click', openFlashOverlay);
-$('closeFlash').addEventListener('click', closeFlash);
-$('flipAll').addEventListener('click', ()=>{ alert('Flip animation for cards — coming soon!') });
-$('loadFromFile').addEventListener('click', ()=>{ alert('الأسئلة مأخوذة من الملف المرفوع فعلياً. لإعادة تحميل الملف — ارفع ملفاً جديداً أو أعد فتح الصفحة.'); });
-$('showRules').addEventListener('click', ()=> {
-  alert('قواعد: 15 سؤال عشوائي — كل سؤال يعطي جائزة حسب مستوى السؤال. خطأ ينتهي ويأخذ أقرب ضمان (سؤال 5 و 10). يمكنك تخطي سؤال واحد بالضغط على تخطي.');
-});
+        // ========================================
+        // وظائف الواجهة الأساسية
+        // ========================================
+        function showTab(tabName) {
+            // إخفاء جميع التبويبات
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
 
-/* init */
-(function init(){
-  // show first placeholder
-  $('cardsCount').textContent = flashcards.length;
-  renderLadder();
-  resetGame();
-})();
-</script>
+            // إظهار التبويب المختار
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
 
+            // تحميل البيانات الخاصة بالتبويب
+            if (tabName === 'products') loadProducts();
+            if (tabName === 'inventory') loadInventory();
+            if (tabName === 'suppliers') loadSuppliers();
+            if (tabName === 'customers') loadCustomers();
+        }
+
+        function clearForm(formId) {
+            document.getElementById(formId).reset();
+        }
+
+        function filterTable(tableId, searchTerm) {
+            const table = document.getElementById(tableId);
+            const rows = table.querySelectorAll('tbody tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm.toLowerCase()) ? '' : 'none';
+            });
+        }
+
+        // ========================================
+        // إدارة المنتجات
+        // ========================================
+        document.getElementById('productForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const product = {
+                name: document.getElementById('productName').value,
+                code: document.getElementById('productCode').value,
+                price: parseFloat(document.getElementById('productPrice').value),
+                quantity: parseFloat(document.getElementById('productQuantity').value),
+                minStock: parseFloat(document.getElementById('productMinStock').value),
+                category: document.getElementById('productCategory').value
+            };
+
+            const editId = this.dataset.editId;
+            if (editId) {
+                db.updateProduct(editId, product);
+                delete this.dataset.editId;
+                showAlert('تم تعديل المنتج بنجاح', 'success');
+            } else {
+                db.addProduct(product);
+                showAlert('تم إضافة المنتج بنجاح', 'success');
+            }
+
+            this.reset();
+            loadProducts();
+        });
+
+        function loadProducts() {
+            const products = db.getProducts();
+            const tbody = document.querySelector('#productsTable tbody');
+            tbody.innerHTML = '';
+
+            products.forEach(product => {
+                const row = document.createElement('tr');
+                const stockStatus = product.quantity <= product.minStock ? 
+                    (product.quantity === 0 ? 'نفد' : 'قليل') : 'جيد';
+                
+                row.className = product.quantity === 0 ? 'out-stock' : 
+                               product.quantity <= product.minStock ? 'low-stock' : '';
+                
+                row.innerHTML = `
+                    <td>${product.code}</td>
+                    <td>${product.name}</td>
+                    <td>${product.price.toFixed(2)} د.ج</td>
+                    <td>${product.quantity}</td>
+                    <td>${product.minStock}</td>
+                    <td>${product.category}</td>
+                    <td>
+                        <button class="btn btn-warning" onclick="editProduct('${product.id}')">تعديل</button>
+                        <button class="btn btn-danger" onclick="deleteProduct('${product.id}')">حذف</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function editProduct(id) {
+            const product = db.getProducts().find(p => p.id === id);
+            if (product) {
+                document.getElementById('productName').value = product.name;
+                document.getElementById('productCode').value = product.code;
+                document.getElementById('productPrice').value = product.price;
+                document.getElementById('productQuantity').value = product.quantity;
+                document.getElementById('productMinStock').value = product.minStock;
+                document.getElementById('productCategory').value = product.category;
+                
+                document.getElementById('productForm').dataset.editId = id;
+                showTab('products');
+            }
+        }
+
+        function deleteProduct(id) {
+            if (confirm('هل أنت متأكد من حذف هذا المنتج؟')) {
+                db.deleteProduct(id);
+                loadProducts();
+                showAlert('تم حذف المنتج بنجاح', 'success');
+            }
+        }
+
+        // ========================================
+        // إدارة المخزون
+        // ========================================
+        document.getElementById('inventoryForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const code = document.getElementById('inventoryProductCode').value;
+            const quantity = document.getElementById('addQuantity').value;
+            const notes = document.getElementById('inventoryNotes').value;
+            
+            const product = db.updateInventory(code, quantity, notes);
+            if (product) {
+                showAlert(`تم إضافة ${quantity} من ${product.name} للمخزون`, 'success');
+                this.reset();
+                loadInventory();
+            } else {
+                showAlert('المنتج غير موجود', 'danger');
+            }
+        });
+
+        function loadInventory() {
+            const products = db.getProducts();
+            const tbody = document.querySelector('#inventoryTable tbody');
+            tbody.innerHTML = '';
+
+            products.forEach(product => {
+                const row = document.createElement('tr');
+                const status = product.quantity === 0 ? 'نفد' : 
+                              product.quantity <= product.minStock ? 'نقص' : 'كافي';
+                const statusClass = product.quantity === 0 ? 'out-stock' : 
+                                   product.quantity <= product.minStock ? 'low-stock' : '';
+                
+                row.className = statusClass;
+                row.innerHTML = `
+                    <td>${product.code}</td>
+                    <td>${product.name}</td>
+                    <td>${product.quantity}</td>
+                    <td>${product.minStock}</td>
+                    <td>${status}</td>
+                    <td>${new Date(product.updatedAt || product.createdAt).toLocaleDateString('ar-DZ')}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // ========================================
+        // المبيعات
+        // ========================================
+        let saleItems = [];
+
+        function searchProductForSale(query) {
+            if (query.length < 2) return;
+            
+            const products = db.getProducts().filter(p => 
+                p.code.includes(query) || p.name.toLowerCase().includes(query.toLowerCase())
+            );
+            
+            if (products.length === 1) {
+                addSaleItem(products[0]);
+            } else if (products.length > 1) {
+                // عرض اقتراحات (يمكن تطويرها لقائمة منسدلة)
+                showAlert(`تم العثور على ${products.length} منتج`, 'info');
+            }
+        }
+
+        function addSaleItem(product) {
+            const existing = saleItems.find(item => item.code === product.code);
+            if (existing && existing.quantity >= product.quantity) {
+                showAlert('لا يوجد مخزون كافي', 'danger');
+                return;
+            }
+
+            if (existing) {
+                existing.quantity += 1;
+            } else {
+                saleItems.push({
+                    code: product.code,
+                    name: product.name,
+                    price: product.price,
+                    quantity: 1
+                });
+            }
+            updateSaleDisplay();
+        }
+
+        function updateSaleDisplay() {
+            const container = document.getElementById('saleItems');
+            container.innerHTML = '';
+
+            saleItems.forEach((item, index) => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'sale-item';
+                itemDiv.innerHTML = `
+                    <div style="flex: 2;">${item.name} (${item.code})</div>
+                    <div style="flex: 1;">${item.price.toFixed(2)} د.ج</div>
+                    <div style="flex: 1;">
+                        <input type="number" value="${item.quantity}" min="1" 
+                               onchange="updateSaleItem(${index}, this.value)" style="width: 60px;">
+                    </div>
+                    <div style="flex: 1; font-weight: bold;">
+                        ${(item.price * item.quantity).toFixed(2)} د.ج
+                    </div>
+                    <button class="btn btn-danger" onclick="removeSaleItem(${index})" style="padding: 5px 10px;">حذف</button>
+                `;
+                container.appendChild(itemDiv);
+            });
+
+            // حساب الإجمالي
+            const subtotal = saleItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const tax = subtotal * 0.19;
+            const total = subtotal + tax;
+
+            document.getElementById('subtotal').textContent = `${subtotal.toFixed(2)} د.ج`;
+            document.getElementById('tax').textContent = `${tax.toFixed(2)} د.ج`;
+            document.getElementById('total').textContent = `${total.toFixed(2)} د.ج`;
+        }
+
+        function updateSaleItem(index, quantity) {
+            saleItems[index].quantity = parseInt(quantity);
+            updateSaleDisplay();
+        }
+
+        function removeSaleItem(index) {
+            saleItems.splice(index, 1);
+            updateSaleDisplay();
+        }
+
+        function clearSale() {
+            saleItems = [];
+            document.getElementById('saleProductSearch').value = '';
+            document.getElementById('customerNameSale').value = '';
+            updateSaleDisplay();
+        }
+
+        function completeSale() {
+            if (saleItems.length === 0) {
+                showAlert('لا توجد عناصر في السلة', 'danger');
+                return;
+            }
+
+            const customerName = document.getElementById('customerNameSale').value || 'عميل عابر';
+            const subtotal = saleItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const tax = subtotal * 0.19;
+            const total = subtotal + tax;
+
+            const sale = {
+                customerName,
+                items: [...saleItems],
+                subtotal,
+                tax,
+                total,
+                itemsCount: saleItems.reduce((sum, item) => sum + item.quantity, 0)
+            };
+
+            db.addSale(sale);
+            showInvoice(sale);
+            clearSale();
+            showAlert('تم حفظ البيع بنجاح', 'success');
+        }
+
+        // ========================================
+        // إدارة الموردين والعملاء
+        // ========================================
+        document.getElementById('supplierForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const supplier = {
+                name: document.getElementById('supplierName').value,
+                phone: document.getElementById('supplierPhone').value,
+                address: document.getElementById('supplierAddress').value
+            };
+
+            const editId = this.dataset.editId;
+            if (editId) {
+                db.updateSupplier(editId, supplier);
+                delete this.dataset.editId;
+            } else {
+                db.addSupplier(supplier);
+            }
+            this.reset();
+            loadSuppliers();
+            showAlert('تم حفظ المورد بنجاح', 'success');
+        });
+
+        function loadSuppliers() {
+            const suppliers = db.getSuppliers();
+            const tbody = document.querySelector('#suppliersTable tbody');
+            tbody.innerHTML = '';
+
+            suppliers.forEach(supplier => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${supplier.name}</td>
+                    <td>${supplier.phone || '-'}</td>
+                    <td>${supplier.address || '-'}</td>
+                    <td>
+                        <button class="btn btn-warning" onclick="editSupplier('${supplier.id}')">تعديل</button>
+                        <button class="btn btn-danger" onclick="deleteSupplier('${supplier.id}')">حذف</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function editSupplier(id) {
+            const supplier = db.getSuppliers().find(s => s.id === id);
+            if (supplier) {
+                document.getElementById('supplierName').value = supplier.name;
+                document.getElementById('supplierPhone').value = supplier.phone || '';
+                document.getElementById('supplierAddress').value = supplier.address || '';
+                document.getElementById('supplierForm').dataset.editId = id;
+            }
+        }
+
+        function deleteSupplier(id) {
+            if (confirm('هل أنت متأكد من حذف هذا المورد؟')) {
+                db.deleteSupplier(id);
+                loadSuppliers();
+            }
+        }
+
+        document.getElementById('customerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const customer = {
+                name: document.getElementById('customerName').value,
+                phone: document.getElementById('customerPhone').value,
+                address: document.getElementById('customerAddress').value
+            };
+
+            const editId = this.dataset.editId;
+            if (editId) {
+                db.updateCustomer(editId, customer);
+                delete this.dataset.editId;
+            } else {
+                db.addCustomer(customer);
+            }
+            this.reset();
+            loadCustomers();
+            showAlert('تم حفظ العميل بنجاح', 'success');
+        });
+
+        function loadCustomers() {
+            const customers = db.getCustomers();
+            const tbody = document.querySelector('#customersTable tbody');
+            tbody.innerHTML = '';
+
+            customers.forEach(customer => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${customer.name}</td>
+                    <td>${customer.phone || '-'}</td>
+                    <td>${customer.address || '-'}</td>
+                    <td>
+                        <button class="btn btn-warning" onclick="editCustomer('${customer.id}')">تعديل</button>
+                        <button class="btn btn-danger" onclick="deleteCustomer('${customer.id}')">حذف</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function editCustomer(id) {
+            const customer = db.getCustomers().find(c => c.id === id);
+            if (customer) {
+                document.getElementById('customerName').value = customer.name;
+                document.getElementById('customerPhone').value = customer.phone || '';
+                document.getElementById('customerAddress').value = customer.address || '';
+                document.getElementById('customerForm').dataset.editId = id;
+            }
+        }
+
+        function deleteCustomer(id) {
+            if (confirm('هل أنت متأكد من حذف هذا العميل؟')) {
+                db.deleteCustomer(id);
+                loadCustomers();
+            }
+        }
+
+        // ========================================
+        // الفواتير والطباعة
+        // ========================================
+        function showInvoice(sale) {
+            const modal = document.getElementById('invoiceModal');
+            const content = document.getElementById('invoiceContent');
+            
+            content.innerHTML = `
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <h2>🛒 فاتورة المبيعات</h2>
+                    <p><strong>التاريخ:</strong> ${new Date().toLocaleDateString('ar-DZ')} ${new Date().toLocaleTimeString('ar-DZ')}</p>
+                    <p><strong>العميل:</strong> ${sale.customerName}</p>
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="background: #f8f9fa;">
+                                <th style="border: 1px solid #ddd; padding: 10px;">المنتج</th>
+                                <th style="border: 1px solid #ddd; padding: 10px;">الكمية</th>
+                                <th style="border: 1px solid #ddd; padding: 10px;">السعر</th>
+                                <th style="border: 1px solid #ddd; padding: 10px;">المجموع</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${sale.items.map(item => `
+                                <tr>
+                                    <td style="border: 1px solid #ddd; padding: 10px;">${item.name}</td>
+                                    <td style="border: 1px solid #ddd; padding: 10px; text-align: center;">${item.quantity}</td>
+                                    <td style="border: 1px solid #ddd; padding: 10px;">${item.price.toFixed(2)} د.ج</td>
+                                    <td style="border: 1px solid #ddd; padding: 10px; font-weight: bold;">
+                                        ${(item.price * item.quantity).toFixed(2)} د.ج
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+                <div style="text-align: left; font-size: 18px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <span>المجموع الفرعي:</span>
+                        <span>${sale.subtotal.toFixed(2)} د.ج</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <span>ضريبة القيمة المضافة (19%):</span>
+                        <span>${sale.tax.toFixed(2)} د.ج</span>
+                    </div>
+                    <hr style="border: 2px solid #333;">
+                    <div style="display: flex; justify-content: space-between; font-size: 22px; font-weight: bold; color: #28a745;">
+                        <span>الإجمالي النهائي:</span>
+                        <span>${sale.total.toFixed(2)} د.ج</span>
+                    </div>
+                    <div style="margin-top: 20px; padding: 15px; background: #e9ecef; border-radius: 8px; font-size: 14px;">
+                        <strong>عدد القطع: ${sale.itemsCount}</strong>
+                    </div>
+                </div>
+            `;
+            
+            modal.style.display = 'block';
+        }
+
+        function printInvoice() {
+            const content = document.getElementById('invoiceContent').innerHTML;
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <html>
+                    <head>
+                        <title>فاتورة المبيعات</title>
+                        <style>
+                            body { font-family: Arial, sans-serif; padding: 20px; direction: rtl; }
+                            table { width: 100%; border-collapse: collapse; }
+                            th, td { border: 1px solid #ddd; padding: 10px; text-align: right; }
+                            th { background: #f8f9fa; }
+                            @media print { body { margin: 0; } }
+                        </style>
+                    </head>
+                    <body>${content}</body>
+                </html>
+            `);
+            printWindow.document.close();
+            printWindow.print();
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // ========================================
+        // التقارير
+        // ========================================
+        function generateReport(type) {
+            const content = document.getElementById('reportContent');
+            let sales = [];
+            
+            if (type === 'daily') {
+                sales = db.getDailySales(new Date().toDateString());
+                content.innerHTML = `
+                    <h3>📊 تقرير المبيعات اليومي</h3>
+                    <p><strong>التاريخ:</strong> ${new Date().toLocaleDateString('ar-DZ')}</p>
+                    <p><strong>عدد المبيعات:</strong> ${sales.length}</p>
+                    <p><strong>إجمالي المبيعات:</strong> ${sales.reduce((sum, s) => sum + s.total, 0).toFixed(2)} د.ج</p>
+                `;
+            } else if (type === 'monthly') {
+                const now = new Date();
+                sales = db.getMonthlySales(now.getFullYear(), now.getMonth() + 1);
+                content.innerHTML = `
+                    <h3>📊 تقرير المبيعات الشهري</h3>
+                    <p><strong>الشهر:</strong> ${now.toLocaleDateString('ar-DZ', { month: 'long', year: 'numeric' })}</p>
+                    <p><strong>عدد المبيعات:</strong> ${sales.length}</p>
+                    <p><strong>إجمالي المبيعات:</strong> ${sales.reduce((sum, s) => sum + s.total, 0).toFixed(2)} د.ج</p>
+                `;
+            }
+        }
+
+        function exportToCSV(type) {
+            let data, filename, headers;
+            
+            if (type === 'sales') {
+                data = db.getSales();
+                headers = ['التاريخ', 'العميل', 'عدد القطع', 'المجموع الفرعي', 'الضريبة', 'الإجمالي'];
+                filename = `مبيعات_${new Date().toISOString().split('T')[0]}.csv`;
+            } else {
+                data = db.getProducts();
+                headers = ['الكود', 'الاسم', 'السعر', 'الكمية', 'الحد الأدنى', 'الفئة'];
+                filename = `منتجات_${new Date().toISOString().split('T')[0]}.csv`;
+            }
+
+            const csv = [
+                headers.join(','),
+                ...data.map(row => Object.values(type === 'sales' ? {
+                    date: new Date(row.date).toLocaleDateString('ar-DZ'),
+                    customer: row.customerName,
+                    itemsCount: row.itemsCount,
+                    subtotal: row.subtotal,
+                    tax: row.tax,
+                    total: row.total
+                } : row).map(field => `"${field}"`).join(','))
+            ].join('\n');
+
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = filename;
+            link.click();
+        }
+
+        // ========================================
+        // وظائف مساعدة
+        // ========================================
+        function showAlert(message, type) {
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            
+            document.querySelector('.tab-content.active').insertBefore(alert, document.querySelector('.tab-content.active').firstChild);
+            
+            setTimeout(() => {
+                alert.remove();
+            }, 5000);
+        }
+
+        // إغلاق النافذة المنبثقة عند الضغط خارجها
+        window.onclick = function(event) {
+            const modal = document.getElementById('invoiceModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        // تحميل البيانات عند بدء التشغيل
+        window.addEventListener('load', function() {
+            loadProducts();
+            loadInventory();
+            loadSuppliers();
+            loadCustomers();
+        });
+
+        // دعم لوحة المفاتيح للمبيعات (Enter لإضافة منتج)
+        document.getElementById('saleProductSearch').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchProductForSale(this.value);
+            }
+        });
+
+        // إضافة منتج بالضغط على مسافة بعد البحث
+        document.addEventListener('keydown', function(e) {
+            if (e.code === 'Space' && document.activeElement.id === 'saleProductSearch') {
+                const query = document.getElementById('saleProductSearch').value;
+                const products = db.getProducts().filter(p => 
+                    p.code.includes(query) || p.name.toLowerCase().includes(query.toLowerCase())
+                );
+                if (products.length === 1) {
+                    e.preventDefault();
+                    addSaleItem(products[0]);
+                }
+            }
+        });
+    </script>
 </body>
 </html>
-
-
-
-
