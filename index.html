@@ -59,6 +59,20 @@
       border: 4px solid #3b82f6;
     }
     .mechanic-card h2 { color: #1e40af; margin-bottom: 0.8rem; }
+    .phone-number {
+      font-size: 1.4rem;
+      font-weight: bold;
+      color: #1e40af;
+      margin: 1rem 0;
+      display: block;
+    }
+    .phone-number a {
+      color: #1e40af;
+      text-decoration: none;
+    }
+    .phone-number a:hover {
+      text-decoration: underline;
+    }
 
     .cards-wrapper {
       display: grid;
@@ -151,12 +165,13 @@
     <button class="lang-btn" data-lang="en">English</button>
   </div>
 
-  <!-- بطاقة عباس أشلاف -->
+  <!-- بطاقة عباس أشلاف مع الرقم -->
   <div class="mechanic-card">
     <img src="https://via.placeholder.com/180?text=عباس+أشلاف" alt="عباس أشلاف">
     <h2 data-key="mechanic-name">عباس أشلاف</h2>
+    <a href="tel:0550813883" class="phone-number">☎ 0550 81 38 83</a>
     <p data-key="mechanic-desc">ميكانيكي محترف بخبرة تزيد عن 15 سنة في صيانة وإصلاح جميع أنواع السيارات (بنزين – ديزل – هجينة). متخصص في أعطال المحرك، نظام التبريد، الفرامل، والكهرباء السيارات. يعمل بأحدث الأجهزة التشخيصية ويضمن جودة عالية ورضا العملاء.</p>
-    <p data-key="mechanic-bio"><strong>سيرة ذاتية مختصرة:</strong> بدأ عباس أشلاف مسيرته في مجال الميكانيك منذ صغره في ورشة عائلية بالجزائر العاصمة، ثم تدرب في مراكز متخصصة في أوروبا والجزائر. حصل على شهادات في صيانة السيارات الحديثة وأنظمة الحقن الإلكتروني. يشتهر بالدقة، السرعة، والأمانة في العمل، ويهدف إلى تقديم خدمة احترافية بأسعار مناسبة لكل مواطن جزائري.</p>
+    <p data-key="mechanic-bio"><strong>سيرة ذاتية مختصرة:</strong> بدأ عباس أشلاف مسيرته في مجال الميكانيك منذ صغره في ورشة عائلية بالجزائر العاصمة، ثم تدرب في مراكز متخصصة في أوروبا والجزائر. حصل على شهادات في صيانة السيارات الحديثة وأنظمة الحقن الإلكتروني. يشتهر بالدقة، السرعة، والأمانة في العمل، ويهدف إلى تقديم خدمة احترافية بأسعار مناسبة لكل مواطن جزائري. للتواصل المباشر: <strong>0550 81 38 83</strong></p>
   </div>
 
   <h1 data-key="title">ورشة عباس أشلاف – حجز مواعيد الصيانة</h1>
@@ -281,7 +296,7 @@
       title: "ورشة عباس أشلاف – حجز مواعيد الصيانة",
       mechanic_name: "عباس أشلاف",
       mechanic_desc: "ميكانيكي محترف بخبرة تزيد عن 15 سنة في صيانة وإصلاح جميع أنواع السيارات (بنزين – ديزل – هجينة). متخصص في أعطال المحرك، نظام التبريد، الفرامل، والكهرباء السيارات. يعمل بأحدث الأجهزة التشخيصية ويضمن جودة عالية ورضا العملاء.",
-      mechanic_bio: "<strong>سيرة ذاتية مختصرة:</strong> بدأ عباس أشلاف مسيرته في مجال الميكانيك منذ صغره في ورشة عائلية بالجزائر العاصمة، ثم تدرب في مراكز متخصصة في أوروبا والجزائر. حصل على شهادات في صيانة السيارات الحديثة وأنظمة الحقن الإلكتروني. يشتهر بالدقة، السرعة، والأمانة في العمل، ويهدف إلى تقديم خدمة احترافية بأسعار مناسبة لكل مواطن جزائري.",
+      mechanic_bio: "<strong>سيرة ذاتية مختصرة:</strong> بدأ عباس أشلاف مسيرته في مجال الميكانيك منذ صغره في ورشة عائلية بالجزائر العاصمة، ثم تدرب في مراكز متخصصة في أوروبا والجزائر. حصل على شهادات في صيانة السيارات الحديثة وأنظمة الحقن الإلكتروني. يشتهر بالدقة، السرعة، والأمانة في العمل، ويهدف إلى تقديم خدمة احترافية بأسعار مناسبة لكل مواطن جزائري. للتواصل المباشر: <strong>0550 81 38 83</strong>",
       working_hours_title: "مواقيت العمل",
       booked_title: "المواعيد المحجوزة",
       book_now: "احجز موعد جديد",
@@ -303,7 +318,7 @@
       title: "Atelier Abbas Achlaf – Réservation de rendez-vous",
       mechanic_name: "Abbas Achlaf",
       mechanic_desc: "Mécanicien professionnel avec plus de 15 ans d'expérience...",
-      mechanic_bio: "<strong>Biographie courte :</strong> Abbas Achlaf a commencé...",
+      mechanic_bio: "<strong>Biographie courte :</strong> Abbas Achlaf a commencé... Pour contact direct : <strong>0550 81 38 83</strong>",
       working_hours_title: "Horaires de travail",
       booked_title: "Rendez-vous réservés",
       book_now: "Réserver un nouveau rendez-vous",
@@ -325,7 +340,7 @@
       title: "Abbas Achlaf Garage – Appointment Booking",
       mechanic_name: "Abbas Achlaf",
       mechanic_desc: "Professional mechanic with over 15 years of experience...",
-      mechanic_bio: "<strong>Short Biography:</strong> Abbas Achlaf began...",
+      mechanic_bio: "<strong>Short Biography:</strong> Abbas Achlaf began... Direct contact: <strong>0550 81 38 83</strong>",
       working_hours_title: "Working Hours",
       booked_title: "Booked Appointments",
       book_now: "Book a New Appointment",
@@ -392,14 +407,14 @@
   // ضبط الحد الأدنى للتاريخ
   document.getElementById('date').min = new Date().toISOString().split('T')[0];
 
-  // نصائح الأمان (مختصرة هنا – يمكن توسيعها)
+  // نصائح الأمان (مختصرة)
   const safetyProtocols = {
     oil_light: {
       ar: "<h4>نصيحة أمان فورية:</h4><p>توقف فوراً، أطفئ المحرك، واترك السيارة تبرد 30 دقيقة على الأقل. لا تقد لتجنب تلف المحرك.</p>",
       fr: "<h4>Conseil immédiat :</h4><p>Arrêtez tout de suite, éteignez le moteur et laissez refroidir 30 min minimum. Ne roulez pas.</p>",
       en: "<h4>Immediate advice:</h4><p>Stop immediately, turn off engine, let cool for at least 30 min. Do not drive.</p>"
     },
-    // أضف باقي الحالات إذا أردت...
+    // يمكن إضافة باقي الحالات لاحقاً
     other: {
       ar: "<h4>نصيحة عامة:</h4><p>توقف في مكان آمن واتبع تعليمات السلامة.</p>",
       fr: "<h4>Conseil général :</h4><p>Arrêtez dans un lieu sûr et suivez les consignes de sécurité.</p>",
