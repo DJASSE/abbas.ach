@@ -1,1261 +1,365 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام إدارة سوبرماركت من برمج جاسر اشلاف - Offline</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ورشة جاسر – حجز مواعيد الصيانة</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
 
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: 'Cairo', system-ui, sans-serif;
+      background: linear-gradient(135deg, #f0f4f8, #d9e2ec);
+      color: #1e293b;
+      min-height: 100vh;
+      padding: 20px 15px;
+      line-height: 1.6;
+    }
+    .container { max-width: 1100px; margin: 0 auto; }
+    h1 { text-align:center; margin: 1.5rem 0 2.5rem; color:#0f172a; font-size:2.1rem; }
+    
+    .cards-wrapper {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+      gap: 2rem;
+      margin-bottom: 3rem;
+    }
+    
+    .card {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      overflow: hidden;
+    }
+    
+    .card-header {
+      background: #1e40af;
+      color: white;
+      padding: 1.3rem 1.8rem;
+      font-size: 1.35rem;
+      font-weight: 600;
+    }
+    
+    .card-body { padding: 1.8rem; }
+    
+    .working-hours li {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.8rem 0;
+      border-bottom: 1px dashed #e2e8f0;
+    }
+    .working-hours li:last-child { border-bottom: none; }
+    .closed { color: #ef4444; font-weight: 600; }
+    
+    .booked-list { list-style: none; }
+    .booked-item {
+      padding: 1.1rem;
+      margin-bottom: 1rem;
+      background: #f8fafc;
+      border-radius: 10px;
+      border-right: 5px solid #3b82f6;
+    }
+    .booked-header { display: flex; justify-content: space-between; font-weight: 600; margin-bottom: 0.4rem; }
+    .status {
+      font-size: 0.9rem;
+      padding: 0.3rem 0.8rem;
+      border-radius: 999px;
+      background: #dbeafe;
+      color: #1d4ed8;
+    }
+    .empty { text-align:center; color:#64748b; font-style:italic; padding:2rem 0; }
 
-        .header {
-            background: linear-gradient(45deg, #FF6B6B, #4ECDC4);
-            color: white;
-            padding: 20px;
-            text-align: center;
-        }
-
-        .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
-
-        .nav-tabs {
-            display: flex;
-            background: #f8f9fa;
-            border-bottom: 2px solid #dee2e6;
-        }
-
-        .tab-btn {
-            flex: 1;
-            padding: 15px;
-            background: none;
-            border: none;
-            font-size: 16px;
-            cursor: pointer;
-            transition: all 0.3s;
-            border-bottom: 3px solid transparent;
-        }
-
-        .tab-btn.active {
-            background: white;
-            border-bottom-color: #007bff;
-            color: #007bff;
-            font-weight: bold;
-        }
-
-        .tab-content {
-            display: none;
-            padding: 30px;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #333;
-        }
-
-        input, select, textarea {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #e1e5e9;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: border-color 0.3s;
-        }
-
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: #007bff;
-            box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
-        }
-
-        .btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 600;
-            transition: all 0.3s;
-            margin: 5px;
-        }
-
-        .btn-primary { background: #007bff; color: white; }
-        .btn-primary:hover { background: #0056b3; transform: translateY(-2px); }
-
-        .btn-success { background: #28a745; color: white; }
-        .btn-success:hover { background: #1e7e34; transform: translateY(-2px); }
-
-        .btn-danger { background: #dc3545; color: white; }
-        .btn-danger:hover { background: #c82333; transform: translateY(-2px); }
-
-        .btn-warning { background: #ffc107; color: #212529; }
-        .btn-warning:hover { background: #e0a800; transform: translateY(-2px); }
-
-        .table-container {
-            overflow-x: auto;
-            margin-top: 20px;
-            border-radius: 8px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-        }
-
-        th, td {
-            padding: 15px;
-            text-align: right;
-            border-bottom: 1px solid #dee2e6;
-        }
-
-        th {
-            background: #f8f9fa;
-            font-weight: 600;
-            color: #495057;
-            position: sticky;
-            top: 0;
-        }
-
-        tr:hover {
-            background: #f8f9fa;
-        }
-
-        .alert {
-            padding: 15px;
-            margin: 20px 0;
-            border-radius: 8px;
-            font-weight: 500;
-        }
-
-        .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .alert-danger { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 1000;
-        }
-
-        .modal-content {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            max-width: 500px;
-            width: 90%;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-
-        .sale-item {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 10px;
-            padding: 10px;
-            background: #f8f9fa;
-            border-radius: 8px;
-        }
-
-        .total-section {
-            background: #e9ecef;
-            padding: 20px;
-            border-radius: 8px;
-            margin-top: 20px;
-        }
-
-        .total-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-            font-size: 18px;
-            font-weight: 600;
-        }
-
-        @media (max-width: 768px) {
-            .nav-tabs {
-                flex-direction: column;
-            }
-            
-            .header h1 {
-                font-size: 1.8em;
-            }
-            
-            .container {
-                margin: 10px;
-                border-radius: 10px;
-            }
-        }
-
-        .low-stock {
-            background-color: #fff3cd !important;
-            color: #856404 !important;
-        }
-
-        .out-stock {
-            background-color: #f8d7da !important;
-            color: #721c24 !important;
-        }
-
-        .print-btn {
-            background: #17a2b8;
-            color: white;
-        }
-
-        .print-btn:hover {
-            background: #138496;
-        }
-    </style>
+    /* نموذج الحجز */
+    #booking-form { background:white; border-radius:16px; box-shadow:0 10px 40px rgba(0,0,0,0.08); padding:2.5rem; }
+    .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.4rem; }
+    .full { grid-column:1/-1; }
+    label { display:block; margin-bottom:0.5rem; font-weight:500; color:#334155; }
+    input, select, textarea {
+      width:100%; padding:0.9rem; border:1px solid #cbd5e1; border-radius:8px; font-size:1rem;
+    }
+    input:focus, select:focus, textarea:focus { outline:none; border-color:#3b82f6; box-shadow:0 0 0 3px rgba(59,130,246,0.15); }
+    button {
+      background:#2563eb; color:white; border:none; padding:1rem 2.5rem; font-size:1.1rem; font-weight:600;
+      border-radius:10px; cursor:pointer; margin:2rem auto 0; display:block;
+    }
+    button:hover { background:#1d4ed8; }
+    #message { margin-top:1.5rem; text-align:center; font-weight:500; }
+    .success { color:#15803d; }
+    .error   { color:#b91c1c; }
+    
+    /* نصيحة الأمان */
+    #safety-advice {
+      margin-top: 1.5rem;
+      padding: 1.2rem;
+      background: #fefce8;
+      border: 1px solid #eab308;
+      border-radius: 8px;
+      color: #713f12;
+      font-size: 1rem;
+    }
+    #safety-advice h4 {
+      margin-bottom: 0.8rem;
+      color: #854d0e;
+    }
+    
+    @media (max-width: 700px) { .form-grid { grid-template-columns:1fr; } }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>🛒 نظام إدارة سوبرماركت</h1>
-            <p>نظام شامل يعمل بدون إنترنت - جميع البيانات محفوظة محلياً</p>
-        </div>
 
-        <div class="nav-tabs">
-            <button class="tab-btn active" onclick="showTab('products')">إدارة المنتجات</button>
-            <button class="tab-btn" onclick="showTab('inventory')">المخزون</button>
-            <button class="tab-btn" onclick="showTab('sales')">المبيعات</button>
-            <button class="tab-btn" onclick="showTab('suppliers')">الموردين</button>
-            <button class="tab-btn" onclick="showTab('customers')">العملاء</button>
-            <button class="tab-btn" onclick="showTab('reports')">التقارير</button>
-        </div>
+<div class="container">
+  <h1>ورشة جاسر – حجز مواعيد الصيانة</h1>
 
-        <!-- تبويب إدارة المنتجات -->
-        <div id="products" class="tab-content active">
-            <h2>إدارة المنتجات</h2>
-            <div class="form-group">
-                <input type="text" id="productSearch" placeholder="ابحث عن منتج..." onkeyup="filterTable('productsTable', this.value)">
-            </div>
-            <form id="productForm">
-                <div class="form-group">
-                    <label>اسم المنتج:</label>
-                    <input type="text" id="productName" required>
-                </div>
-                <div class="form-group">
-                    <label>الكود:</label>
-                    <input type="text" id="productCode" required>
-                </div>
-                <div class="form-group">
-                    <label>السعر:</label>
-                    <input type="number" id="productPrice" step="0.01" required>
-                </div>
-                <div class="form-group">
-                    <label>الكمية المتوفرة:</label>
-                    <input type="number" id="productQuantity" required>
-                </div>
-                <div class="form-group">
-                    <label>الحد الأدنى للمخزون:</label>
-                    <input type="number" id="productMinStock" value="5">
-                </div>
-                <div class="form-group">
-                    <label>الفئة:</label>
-                    <select id="productCategory">
-                        <option value="غذائي">غذائي</option>
-                        <option value="مشروبات">مشروبات</option>
-                        <option value="تنظيف">تنظيف</option>
-                        <option value="أخرى">أخرى</option>
-                    </select>
-                </div>
-                <button type="submit" class="btn btn-primary">حفظ المنتج</button>
-                <button type="button" class="btn btn-warning" onclick="clearForm('productForm')">جديد</button>
-            </form>
+  <div class="cards-wrapper">
 
-            <div class="table-container">
-                <table id="productsTable">
-                    <thead>
-                        <tr>
-                            <th>الكود</th>
-                            <th>الاسم</th>
-                            <th>السعر</th>
-                            <th>الكمية</th>
-                            <th>الحد الأدنى</th>
-                            <th>الفئة</th>
-                            <th>الإجراءات</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- تبويب المخزون -->
-        <div id="inventory" class="tab-content">
-            <h2>إدارة المخزون</h2>
-            <div class="form-group">
-                <input type="text" id="inventorySearch" placeholder="ابحث في المخزون..." onkeyup="filterTable('inventoryTable', this.value)">
-            </div>
-            <form id="inventoryForm">
-                <div class="form-group">
-                    <label>كود المنتج:</label>
-                    <input type="text" id="inventoryProductCode" required>
-                </div>
-                <div class="form-group">
-                    <label>كمية الإضافة:</label>
-                    <input type="number" id="addQuantity" required>
-                </div>
-                <div class="form-group">
-                    <label>ملاحظات:</label>
-                    <textarea id="inventoryNotes" rows="3"></textarea>
-                </div>
-                <button type="submit" class="btn btn-success">إضافة للمخزون</button>
-            </form>
-
-            <div class="table-container">
-                <table id="inventoryTable">
-                    <thead>
-                        <tr>
-                            <th>الكود</th>
-                            <th>الاسم</th>
-                            <th>الكمية الحالية</th>
-                            <th>الحد الأدنى</th>
-                            <th>الحالة</th>
-                            <th>آخر تحديث</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- تبويب المبيعات -->
-        <div id="sales" class="tab-content">
-            <h2>تسجيل المبيعات</h2>
-            <div class="form-group">
-                <input type="text" id="saleProductSearch" placeholder="ابحث عن المنتج بالكود أو الاسم..." onkeyup="searchProductForSale(this.value)">
-            </div>
-            <div id="saleItems"></div>
-            <div class="total-section">
-                <div class="total-row">
-                    <span>المجموع:</span>
-                    <span id="subtotal">0.00 د.ج</span>
-                </div>
-                <div class="total-row">
-                    <span>الضريبة (19%):</span>
-                    <span id="tax">0.00 د.ج</span>
-                </div>
-                <hr>
-                <div class="total-row" style="font-size: 22px; color: #28a745;">
-                    <span>الإجمالي:</span>
-                    <span id="total">0.00 د.ج</span>
-                </div>
-            </div>
-            <div style="margin-top: 20px;">
-                <input type="text" id="customerNameSale" placeholder="اسم العميل (اختياري)">
-                <button class="btn btn-primary print-btn" onclick="completeSale()">إكمال البيع وطباعة الفاتورة</button>
-                <button class="btn btn-warning" onclick="clearSale()">إلغاء</button>
-            </div>
-        </div>
-
-        <!-- تبويب الموردين -->
-        <div id="suppliers" class="tab-content">
-            <h2>إدارة الموردين</h2>
-            <div class="form-group">
-                <input type="text" id="supplierSearch" placeholder="ابحث عن مورد..." onkeyup="filterTable('suppliersTable', this.value)">
-            </div>
-            <form id="supplierForm">
-                <div class="form-group">
-                    <label>اسم المورد:</label>
-                    <input type="text" id="supplierName" required>
-                </div>
-                <div class="form-group">
-                    <label>رقم الهاتف:</label>
-                    <input type="tel" id="supplierPhone">
-                </div>
-                <div class="form-group">
-                    <label>العنوان:</label>
-                    <textarea id="supplierAddress" rows="3"></textarea>
-                </div>
-                <button type="submit" class="btn btn-primary">حفظ المورد</button>
-                <button type="button" class="btn btn-warning" onclick="clearForm('supplierForm')">جديد</button>
-            </form>
-
-            <div class="table-container">
-                <table id="suppliersTable">
-                    <thead>
-                        <tr>
-                            <th>الاسم</th>
-                            <th>الهاتف</th>
-                            <th>العنوان</th>
-                            <th>الإجراءات</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- تبويب العملاء -->
-        <div id="customers" class="tab-content">
-            <h2>إدارة العملاء</h2>
-            <div class="form-group">
-                <input type="text" id="customerSearch" placeholder="ابحث عن عميل..." onkeyup="filterTable('customersTable', this.value)">
-            </div>
-            <form id="customerForm">
-                <div class="form-group">
-                    <label>اسم العميل:</label>
-                    <input type="text" id="customerName" required>
-                </div>
-                <div class="form-group">
-                    <label>رقم الهاتف:</label>
-                    <input type="tel" id="customerPhone">
-                </div>
-                <div class="form-group">
-                    <label>العنوان:</label>
-                    <textarea id="customerAddress" rows="3"></textarea>
-                </div>
-                <button type="submit" class="btn btn-primary">حفظ العميل</button>
-                <button type="button" class="btn btn-warning" onclick="clearForm('customerForm')">جديد</button>
-            </form>
-
-            <div class="table-container">
-                <table id="customersTable">
-                    <thead>
-                        <tr>
-                            <th>الاسم</th>
-                            <th>الهاتف</th>
-                            <th>العنوان</th>
-                            <th>الإجراءات</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- تبويب التقارير -->
-        <div id="reports" class="tab-content">
-            <h2>التقارير</h2>
-            <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px;">
-                <button class="btn btn-primary" onclick="generateReport('daily')">تقرير يومي</button>
-                <button class="btn btn-primary" onclick="generateReport('monthly')">تقرير شهري</button>
-                <button class="btn btn-success" onclick="exportToCSV('sales')">تصدير مبيعات CSV</button>
-                <button class="btn btn-success" onclick="exportToCSV('products')">تصدير منتجات CSV</button>
-            </div>
-            <div id="reportContent"></div>
-        </div>
+    <!-- مواقيت العمل -->
+    <div class="card">
+      <div class="card-header">مواقيت العمل</div>
+      <div class="card-body">
+        <ul class="working-hours">
+          <li><span>الأحد</span>     <span>08:00 – 18:00</span></li>
+          <li><span>الإثنين</span>   <span>08:00 – 18:00</span></li>
+          <li><span>الثلاثاء</span>  <span>08:00 – 18:00</span></li>
+          <li><span>الأربعاء</span>  <span>08:00 – 18:00</span></li>
+          <li><span>الخميس</span>    <span>08:00 – 18:00</span></li>
+          <li><span>الجمعة</span>    <span class="closed">مغلق</span></li>
+          <li><span>السبت</span>     <span>09:00 – 15:00</span></li>
+        </ul>
+      </div>
     </div>
 
-    <!-- نافذة الفاتورة -->
-    <div id="invoiceModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('invoiceModal')">&times;</span>
-            <div id="invoiceContent"></div>
-            <button class="btn btn-primary print-btn" onclick="printInvoice()">طباعة الفاتورة</button>
-        </div>
+    <!-- الحجوزات الحالية (real-time) -->
+    <div class="card">
+      <div class="card-header">المواعيد المحجوزة</div>
+      <div class="card-body">
+        <ul class="booked-list" id="booked-list">
+          <li class="empty">جاري تحميل المواعيد...</li>
+        </ul>
+      </div>
     </div>
 
-    <script>
-        // ========================================
-        // نظام التخزين المحلي باستخدام localStorage
-        // ========================================
-        class SupermarketDB {
-            constructor() {
-                this.db = {
-                    products: [],
-                    suppliers: [],
-                    customers: [],
-                    sales: [],
-                    inventoryLog: []
-                };
-                this.loadData();
-            }
+  </div>
+
+  <!-- نموذج الحجز -->
+  <div id="booking-form">
+    <h2 style="text-align:center; margin-bottom:2rem;">احجز موعد جديد</h2>
+    
+    <form id="appointment-form">
+      <div class="form-grid">
+        <div>
+          <label>الاسم الكامل</label>
+          <input type="text" id="name" required>
+        </div>
+        <div>
+          <label>رقم الهاتف</label>
+          <input type="tel" id="phone" required pattern="0[5-7][0-9]{8}">
+        </div>
+        <div>
+          <label>موديل السيارة</label>
+          <input type="text" id="car" required placeholder="مثال: تويوتا كامري 2020">
+        </div>
+        <div>
+          <label>رقم اللوحة (اختياري)</label>
+          <input type="text" id="plate">
+        </div>
+        <div>
+          <label>تاريخ الموعد</label>
+          <input type="date" id="date" required>
+        </div>
+        <div>
+          <label>الوقت</label>
+          <select id="time" required>
+            <option value="">اختر الوقت</option>
+            <option value="08:00">08:00 – 09:30</option>
+            <option value="09:30">09:30 – 11:00</option>
+            <option value="11:00">11:00 – 12:30</option>
+            <option value="13:00">13:00 – 14:30</option>
+            <option value="14:30">14:30 – 16:00</option>
+            <option value="16:00">16:00 – 17:30</option>
+          </select>
+        </div>
+        <div class="full">
+          <label>المشكلة الطارئة (مساعد طارئ)</label>
+          <select id="emergency_issue" required>
+            <option value="">-- اختر المشكلة --</option>
+            <option value="oil_light">لمبة الزيت تضيء</option>
+            <option value="overheating">تسخين زائد للمحرك</option>
+            <option value="flat_tire">إطار مثقوب أو مفلطح</option>
+            <option value="dead_battery">البطارية ميتة (السيارة لا تبدأ)</option>
+            <option value="fluid_leak">تسرب سائل (زيت، ماء، إلخ)</option>
+            <option value="brake_issue">مشكلة في الفرامل</option>
+            <option value="engine_smoke">دخان من المحرك</option>
+            <option value="other">أخرى</option>
+          </select>
+        </div>
+        <div class="full" id="safety-advice" style="display: none;"></div>
+        <div class="full">
+          <label>ملاحظات إضافية</label>
+          <textarea id="notes" rows="3" placeholder="وصف المشكلة إن وجدت..."></textarea>
+        </div>
+      </div>
+
+      <button type="submit">تأكيد الحجز</button>
+    </form>
+
+    <div id="message"></div>
+  </div>
+</div>
+
+<script>
+  // ────────────────────────────────────────────────
+  // Firebase Configuration (من عندك)
+  // ────────────────────────────────────────────────
+  const firebaseConfig = {
+    apiKey: "AIzaSyCLCSPOV1nuk5RvQiSJcjc18rxXbC0Ei9Y",
+    authDomain: "bot-djasser-achlaf-4494.firebaseapp.com",
+    databaseURL: "https://bot-djasser-achlaf-4494-default-rtdb.firebaseio.com",
+    projectId: "bot-djasser-achlaf-4494",
+    storageBucket: "bot-djasser-achlaf-4494.firebasestorage.app",
+    messagingSenderId: "500557963512",
+    appId: "1:500557963512:web:a32bf5c21ba508662b5b0d"
+  };
+
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  const bookedList = document.getElementById('booked-list');
+  const form = document.getElementById('appointment-form');
+  const messageDiv = document.getElementById('message');
+  const emergencySelect = document.getElementById('emergency_issue');
+  const safetyAdviceDiv = document.getElementById('safety-advice');
+
+  // ────────────────────────────────────────────────
+  // عرض الحجوزات في الوقت الفعلي
+  // ────────────────────────────────────────────────
+  const appointmentsRef = db.ref('appointments');
+
+  appointmentsRef.on('value', (snapshot) => {
+    bookedList.innerHTML = '';
+
+    if (!snapshot.exists() || Object.keys(snapshot.val() || {}).length === 0) {
+      bookedList.innerHTML = '<li class="empty">لا توجد حجوزات مسجلة حالياً</li>';
+      return;
+    }
+
+    const data = snapshot.val();
+    Object.entries(data).forEach(([key, appt]) => {
+      const li = document.createElement('li');
+      li.className = 'booked-item';
+      li.innerHTML = `
+        <div class="booked-header">
+          <span>${appt.date || 'غير محدد'}</span>
+          <span class="status">محجوز</span>
+        </div>
+        <div>${appt.time || 'غير محدد'}</div>
+        <div style="color:#475569; margin-top:0.4rem;">
+          ${appt.name} – ${appt.car || ''} – ${appt.issue || ''}
+        </div>
+      `;
+      bookedList.appendChild(li);
+    });
+  });
+
+  // ضبط الحد الأدنى للتاريخ = اليوم
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('date').min = new Date().toISOString().split('T')[0];
+  });
+
+  // ────────────────────────────────────────────────
+  // عرض نصيحة أمان طارئة بناءً على الاختيار
+  // ────────────────────────────────────────────────
+  const safetyProtocols = {
+    oil_light: `
+      <h4>نصيحة أمان فورية:</h4>
+      <p>إذا أضاءت لمبة الزيت، توقف السيارة مباشرة في مكان آمن بعيداً عن الطريق. أطفئ المحرك ودع السيارة تبرد تماماً لمدة 30 دقيقة على الأقل. لا تقد السيارة أكثر لتجنب تلف المحرك. بعد ذلك، احجز موعد عند عباس الميكانيكي لفحص مستوى الزيت والضغط.</p>
+    `,
+    overheating: `
+      <h4>نصيحة أمان فورية:</h4>
+      <p>توقف في مكان آمن، أطفئ المحرك فوراً، ودع السيارة تبرد لساعة على الأقل. لا تفتح غطاء الرادياتير إلا بعد التبريد الكامل لتجنب الحروق. شغل المدفأة لمساعدة في التبريد إذا لزم الأمر. احجز موعد لفحص نظام التبريد.</p>
+    `,
+    flat_tire: `
+      <h4>نصيحة أمان فورية:</h4>
+      <p>حافظ على سيطرة المقود، ابطئ تدريجياً، وتوقف في سطح مستوٍ آمن بعيداً عن الحركة. شغل أنوار الطوارئ، وضع مثلث التحذير خلف السيارة. إذا كنت تستطيع، غير الإطار بنفسك؛ وإلا انتظر المساعدة داخل السيارة. احجز موعد لإصلاح أو استبدال الإطار.</p>
+    `,
+    dead_battery: `
+      <h4>نصيحة أمان فورية:</h4>
+      <p>توقف في مكان آمن، شغل أنوار الطوارئ. إذا كان لديك كوابل شحن، اطلب مساعدة من سيارة أخرى، لكن كن حذراً من الشرارات. انتظر داخل السيارة إذا كنت تنتظر المساعدة. احجز موعد لفحص البطارية والنظام الكهربائي.</p>
+    `,
+    fluid_leak: `
+      <h4>نصيحة أمان فورية:</h4>
+      <p>توقف في مكان آمن، أطفئ المحرك، وتحقق من نوع السائل (زيت، ماء، إلخ) دون لمسه إذا كان ساخناً. لا تقد السيارة إذا كان التسرب كبيراً لتجنب تلف المحرك أو الحريق. احجز موعد فوري لإصلاح التسرب.</p>
+    `,
+    brake_issue: `
+      <h4>نصيحة أمان فورية:</h4>
+      <p>إذا شعرت بمشكلة في الفرامل، ابطئ باستخدام فرامل اليد تدريجياً، وتوقف في مكان آمن. شغل أنوار الطوارئ ولا تقد أكثر. انتظر المساعدة داخل السيارة. احجز موعد لفحص نظام الفرامل فوراً.</p>
+    `,
+    engine_smoke: `
+      <h4>نصيحة أمان فورية:</h4>
+      <p>توقف فوراً في مكان آمن، أطفئ المحرك، وابتعد عن السيارة لتجنب الحريق. شغل أنوار الطوارئ وضع مثلث التحذير. لا تفتح غطاء المحرك إذا كان هناك دخان كثيف. احجز موعد لفحص المحرك.</p>
+    `,
+    other: `
+      <h4>نصيحة أمان عامة:</h4>
+      <p>توقف في مكان آمن، شغل أنوار الطوارئ، وابق داخل السيارة مع قفل الأبواب. لا تحاول إصلاحاً ذاتياً إلا إذا كنت خبيراً. احجز موعد وصف المشكلة في الملاحظات لمساعدتنا.</p>
+    `
+  };
+
+  emergencySelect.addEventListener('change', (e) => {
+    const issue = e.target.value;
+    if (issue && safetyProtocols[issue]) {
+      safetyAdviceDiv.innerHTML = safetyProtocols[issue];
+      safetyAdviceDiv.style.display = 'block';
+    } else {
+      safetyAdviceDiv.style.display = 'none';
+    }
+  });
+
+  // ────────────────────────────────────────────────
+  // حفظ حجز جديد
+  // ────────────────────────────────────────────────
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const newAppointment = {
+      name:   document.getElementById('name').value.trim(),
+      phone:  document.getElementById('phone').value.trim(),
+      car:    document.getElementById('car').value.trim(),
+      plate:  document.getElementById('plate').value.trim() || null,
+      date:   document.getElementById('date').value,
+      time:   document.getElementById('time').value,
+      issue:  document.getElementById('emergency_issue').value,
+      notes:  document.getElementById('notes').value.trim() || null,
+      createdAt: firebase.database.ServerValue.TIMESTAMP
+    };
+
+    if (!newAppointment.name || !newAppointment.phone || !newAppointment.date || !newAppointment.time || !newAppointment.issue) {
+      messageDiv.textContent = 'يرجى ملء جميع جميع الحقول المطلوبة';
+      messageDiv.className = 'error';
+      return;
+    }
+
+    appointmentsRef.push(newAppointment)
+      .then(() => {
+        messageDiv.textContent = 'تم حفظ الحجز بنجاح! سيتم التواصل معك قريباً.';
+        messageDiv.className = 'success';
+        form.reset();
+        safetyAdviceDiv.style.display = 'none';
+      })
+      .catch((error) => {
+        messageDiv.textContent = 'حدث خطأ أثناء الحفظ: ' + error.message;
+        messageDiv.className = 'error';
+        console.error(error);
+      });
+  });
+</script>
 
-            loadData() {
-                const saved = localStorage.getItem('supermarket_db');
-                if (saved) {
-                    this.db = { ...this.db, ...JSON.parse(saved) };
-                }
-            }
-
-            saveData() {
-                localStorage.setItem('supermarket_db', JSON.stringify(this.db));
-            }
-
-            // منتجات
-            addProduct(product) {
-                const id = Date.now().toString();
-                const newProduct = { id, ...product, createdAt: new Date().toISOString() };
-                this.db.products.push(newProduct);
-                this.saveData();
-                return newProduct;
-            }
-
-            updateProduct(id, updates) {
-                const index = this.db.products.findIndex(p => p.id === id);
-                if (index !== -1) {
-                    this.db.products[index] = { ...this.db.products[index], ...updates };
-                    this.saveData();
-                    return true;
-                }
-                return false;
-            }
-
-            deleteProduct(id) {
-                this.db.products = this.db.products.filter(p => p.id !== id);
-                this.saveData();
-            }
-
-            getProducts() {
-                return this.db.products;
-            }
-
-            // مخزون
-            updateInventory(productCode, quantity, notes = '') {
-                const product = this.db.products.find(p => p.code === productCode);
-                if (product) {
-                    product.quantity = (parseFloat(product.quantity) || 0) + parseFloat(quantity);
-                    product.updatedAt = new Date().toISOString();
-                    
-                    this.db.inventoryLog.push({
-                        id: Date.now().toString(),
-                        productCode,
-                        productName: product.name,
-                        quantity,
-                        notes,
-                        date: new Date().toISOString()
-                    });
-                    this.saveData();
-                    return product;
-                }
-                return null;
-            }
-
-            // مبيعات
-            addSale(sale) {
-                const id = Date.now().toString();
-                const newSale = { id, ...sale, date: new Date().toISOString() };
-                this.db.sales.push(newSale);
-                
-                // تحديث المخزون
-                sale.items.forEach(item => {
-                    const product = this.db.products.find(p => p.code === item.code);
-                    if (product) {
-                        product.quantity -= item.quantity;
-                    }
-                });
-                
-                this.saveData();
-                return newSale;
-            }
-
-            getSales() {
-                return this.db.sales;
-            }
-
-            // موردون وعملاء
-            addSupplier(supplier) {
-                const id = Date.now().toString();
-                const newSupplier = { id, ...supplier };
-                this.db.suppliers.push(newSupplier);
-                this.saveData();
-                return newSupplier;
-            }
-
-            updateSupplier(id, updates) {
-                const index = this.db.suppliers.findIndex(s => s.id === id);
-                if (index !== -1) {
-                    this.db.suppliers[index] = { ...this.db.suppliers[index], ...updates };
-                    this.saveData();
-                    return true;
-                }
-                return false;
-            }
-
-            deleteSupplier(id) {
-                this.db.suppliers = this.db.suppliers.filter(s => s.id !== id);
-                this.saveData();
-            }
-
-            getSuppliers() {
-                return this.db.suppliers;
-            }
-
-            addCustomer(customer) {
-                const id = Date.now().toString();
-                const newCustomer = { id, ...customer };
-                this.db.customers.push(newCustomer);
-                this.saveData();
-                return newCustomer;
-            }
-
-            updateCustomer(id, updates) {
-                const index = this.db.customers.findIndex(c => c.id === id);
-                if (index !== -1) {
-                    this.db.customers[index] = { ...this.db.customers[index], ...updates };
-                    this.saveData();
-                    return true;
-                }
-                return false;
-            }
-
-            deleteCustomer(id) {
-                this.db.customers = this.db.customers.filter(c => c.id !== id);
-                this.saveData();
-            }
-
-            getCustomers() {
-                return this.db.customers;
-            }
-
-            // تقارير
-            getDailySales(date) {
-                const today = new Date(date);
-                const tomorrow = new Date(today);
-                tomorrow.setDate(tomorrow.getDate() + 1);
-                
-                return this.db.sales.filter(sale => {
-                    const saleDate = new Date(sale.date);
-                    return saleDate >= today && saleDate < tomorrow;
-                });
-            }
-
-            getMonthlySales(year, month) {
-                const start = new Date(year, month - 1, 1);
-                const end = new Date(year, month, 0);
-                
-                return this.db.sales.filter(sale => {
-                    const saleDate = new Date(sale.date);
-                    return saleDate >= start && saleDate <= end;
-                });
-            }
-        }
-
-        // تهيئة قاعدة البيانات
-        const db = new SupermarketDB();
-
-        // ========================================
-        // وظائف الواجهة الأساسية
-        // ========================================
-        function showTab(tabName) {
-            // إخفاء جميع التبويبات
-            document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-
-            // إظهار التبويب المختار
-            document.getElementById(tabName).classList.add('active');
-            event.target.classList.add('active');
-
-            // تحميل البيانات الخاصة بالتبويب
-            if (tabName === 'products') loadProducts();
-            if (tabName === 'inventory') loadInventory();
-            if (tabName === 'suppliers') loadSuppliers();
-            if (tabName === 'customers') loadCustomers();
-        }
-
-        function clearForm(formId) {
-            document.getElementById(formId).reset();
-        }
-
-        function filterTable(tableId, searchTerm) {
-            const table = document.getElementById(tableId);
-            const rows = table.querySelectorAll('tbody tr');
-            
-            rows.forEach(row => {
-                const text = row.textContent.toLowerCase();
-                row.style.display = text.includes(searchTerm.toLowerCase()) ? '' : 'none';
-            });
-        }
-
-        // ========================================
-        // إدارة المنتجات
-        // ========================================
-        document.getElementById('productForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const product = {
-                name: document.getElementById('productName').value,
-                code: document.getElementById('productCode').value,
-                price: parseFloat(document.getElementById('productPrice').value),
-                quantity: parseFloat(document.getElementById('productQuantity').value),
-                minStock: parseFloat(document.getElementById('productMinStock').value),
-                category: document.getElementById('productCategory').value
-            };
-
-            const editId = this.dataset.editId;
-            if (editId) {
-                db.updateProduct(editId, product);
-                delete this.dataset.editId;
-                showAlert('تم تعديل المنتج بنجاح', 'success');
-            } else {
-                db.addProduct(product);
-                showAlert('تم إضافة المنتج بنجاح', 'success');
-            }
-
-            this.reset();
-            loadProducts();
-        });
-
-        function loadProducts() {
-            const products = db.getProducts();
-            const tbody = document.querySelector('#productsTable tbody');
-            tbody.innerHTML = '';
-
-            products.forEach(product => {
-                const row = document.createElement('tr');
-                const stockStatus = product.quantity <= product.minStock ? 
-                    (product.quantity === 0 ? 'نفد' : 'قليل') : 'جيد';
-                
-                row.className = product.quantity === 0 ? 'out-stock' : 
-                               product.quantity <= product.minStock ? 'low-stock' : '';
-                
-                row.innerHTML = `
-                    <td>${product.code}</td>
-                    <td>${product.name}</td>
-                    <td>${product.price.toFixed(2)} د.ج</td>
-                    <td>${product.quantity}</td>
-                    <td>${product.minStock}</td>
-                    <td>${product.category}</td>
-                    <td>
-                        <button class="btn btn-warning" onclick="editProduct('${product.id}')">تعديل</button>
-                        <button class="btn btn-danger" onclick="deleteProduct('${product.id}')">حذف</button>
-                    </td>
-                `;
-                tbody.appendChild(row);
-            });
-        }
-
-        function editProduct(id) {
-            const product = db.getProducts().find(p => p.id === id);
-            if (product) {
-                document.getElementById('productName').value = product.name;
-                document.getElementById('productCode').value = product.code;
-                document.getElementById('productPrice').value = product.price;
-                document.getElementById('productQuantity').value = product.quantity;
-                document.getElementById('productMinStock').value = product.minStock;
-                document.getElementById('productCategory').value = product.category;
-                
-                document.getElementById('productForm').dataset.editId = id;
-                showTab('products');
-            }
-        }
-
-        function deleteProduct(id) {
-            if (confirm('هل أنت متأكد من حذف هذا المنتج؟')) {
-                db.deleteProduct(id);
-                loadProducts();
-                showAlert('تم حذف المنتج بنجاح', 'success');
-            }
-        }
-
-        // ========================================
-        // إدارة المخزون
-        // ========================================
-        document.getElementById('inventoryForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const code = document.getElementById('inventoryProductCode').value;
-            const quantity = document.getElementById('addQuantity').value;
-            const notes = document.getElementById('inventoryNotes').value;
-            
-            const product = db.updateInventory(code, quantity, notes);
-            if (product) {
-                showAlert(`تم إضافة ${quantity} من ${product.name} للمخزون`, 'success');
-                this.reset();
-                loadInventory();
-            } else {
-                showAlert('المنتج غير موجود', 'danger');
-            }
-        });
-
-        function loadInventory() {
-            const products = db.getProducts();
-            const tbody = document.querySelector('#inventoryTable tbody');
-            tbody.innerHTML = '';
-
-            products.forEach(product => {
-                const row = document.createElement('tr');
-                const status = product.quantity === 0 ? 'نفد' : 
-                              product.quantity <= product.minStock ? 'نقص' : 'كافي';
-                const statusClass = product.quantity === 0 ? 'out-stock' : 
-                                   product.quantity <= product.minStock ? 'low-stock' : '';
-                
-                row.className = statusClass;
-                row.innerHTML = `
-                    <td>${product.code}</td>
-                    <td>${product.name}</td>
-                    <td>${product.quantity}</td>
-                    <td>${product.minStock}</td>
-                    <td>${status}</td>
-                    <td>${new Date(product.updatedAt || product.createdAt).toLocaleDateString('ar-DZ')}</td>
-                `;
-                tbody.appendChild(row);
-            });
-        }
-
-        // ========================================
-        // المبيعات
-        // ========================================
-        let saleItems = [];
-
-        function searchProductForSale(query) {
-            if (query.length < 2) return;
-            
-            const products = db.getProducts().filter(p => 
-                p.code.includes(query) || p.name.toLowerCase().includes(query.toLowerCase())
-            );
-            
-            if (products.length === 1) {
-                addSaleItem(products[0]);
-            } else if (products.length > 1) {
-                // عرض اقتراحات (يمكن تطويرها لقائمة منسدلة)
-                showAlert(`تم العثور على ${products.length} منتج`, 'info');
-            }
-        }
-
-        function addSaleItem(product) {
-            const existing = saleItems.find(item => item.code === product.code);
-            if (existing && existing.quantity >= product.quantity) {
-                showAlert('لا يوجد مخزون كافي', 'danger');
-                return;
-            }
-
-            if (existing) {
-                existing.quantity += 1;
-            } else {
-                saleItems.push({
-                    code: product.code,
-                    name: product.name,
-                    price: product.price,
-                    quantity: 1
-                });
-            }
-            updateSaleDisplay();
-        }
-
-        function updateSaleDisplay() {
-            const container = document.getElementById('saleItems');
-            container.innerHTML = '';
-
-            saleItems.forEach((item, index) => {
-                const itemDiv = document.createElement('div');
-                itemDiv.className = 'sale-item';
-                itemDiv.innerHTML = `
-                    <div style="flex: 2;">${item.name} (${item.code})</div>
-                    <div style="flex: 1;">${item.price.toFixed(2)} د.ج</div>
-                    <div style="flex: 1;">
-                        <input type="number" value="${item.quantity}" min="1" 
-                               onchange="updateSaleItem(${index}, this.value)" style="width: 60px;">
-                    </div>
-                    <div style="flex: 1; font-weight: bold;">
-                        ${(item.price * item.quantity).toFixed(2)} د.ج
-                    </div>
-                    <button class="btn btn-danger" onclick="removeSaleItem(${index})" style="padding: 5px 10px;">حذف</button>
-                `;
-                container.appendChild(itemDiv);
-            });
-
-            // حساب الإجمالي
-            const subtotal = saleItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            const tax = subtotal * 0.19;
-            const total = subtotal + tax;
-
-            document.getElementById('subtotal').textContent = `${subtotal.toFixed(2)} د.ج`;
-            document.getElementById('tax').textContent = `${tax.toFixed(2)} د.ج`;
-            document.getElementById('total').textContent = `${total.toFixed(2)} د.ج`;
-        }
-
-        function updateSaleItem(index, quantity) {
-            saleItems[index].quantity = parseInt(quantity);
-            updateSaleDisplay();
-        }
-
-        function removeSaleItem(index) {
-            saleItems.splice(index, 1);
-            updateSaleDisplay();
-        }
-
-        function clearSale() {
-            saleItems = [];
-            document.getElementById('saleProductSearch').value = '';
-            document.getElementById('customerNameSale').value = '';
-            updateSaleDisplay();
-        }
-
-        function completeSale() {
-            if (saleItems.length === 0) {
-                showAlert('لا توجد عناصر في السلة', 'danger');
-                return;
-            }
-
-            const customerName = document.getElementById('customerNameSale').value || 'عميل عابر';
-            const subtotal = saleItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            const tax = subtotal * 0.19;
-            const total = subtotal + tax;
-
-            const sale = {
-                customerName,
-                items: [...saleItems],
-                subtotal,
-                tax,
-                total,
-                itemsCount: saleItems.reduce((sum, item) => sum + item.quantity, 0)
-            };
-
-            db.addSale(sale);
-            showInvoice(sale);
-            clearSale();
-            showAlert('تم حفظ البيع بنجاح', 'success');
-        }
-
-        // ========================================
-        // إدارة الموردين والعملاء
-        // ========================================
-        document.getElementById('supplierForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const supplier = {
-                name: document.getElementById('supplierName').value,
-                phone: document.getElementById('supplierPhone').value,
-                address: document.getElementById('supplierAddress').value
-            };
-
-            const editId = this.dataset.editId;
-            if (editId) {
-                db.updateSupplier(editId, supplier);
-                delete this.dataset.editId;
-            } else {
-                db.addSupplier(supplier);
-            }
-            this.reset();
-            loadSuppliers();
-            showAlert('تم حفظ المورد بنجاح', 'success');
-        });
-
-        function loadSuppliers() {
-            const suppliers = db.getSuppliers();
-            const tbody = document.querySelector('#suppliersTable tbody');
-            tbody.innerHTML = '';
-
-            suppliers.forEach(supplier => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${supplier.name}</td>
-                    <td>${supplier.phone || '-'}</td>
-                    <td>${supplier.address || '-'}</td>
-                    <td>
-                        <button class="btn btn-warning" onclick="editSupplier('${supplier.id}')">تعديل</button>
-                        <button class="btn btn-danger" onclick="deleteSupplier('${supplier.id}')">حذف</button>
-                    </td>
-                `;
-                tbody.appendChild(row);
-            });
-        }
-
-        function editSupplier(id) {
-            const supplier = db.getSuppliers().find(s => s.id === id);
-            if (supplier) {
-                document.getElementById('supplierName').value = supplier.name;
-                document.getElementById('supplierPhone').value = supplier.phone || '';
-                document.getElementById('supplierAddress').value = supplier.address || '';
-                document.getElementById('supplierForm').dataset.editId = id;
-            }
-        }
-
-        function deleteSupplier(id) {
-            if (confirm('هل أنت متأكد من حذف هذا المورد؟')) {
-                db.deleteSupplier(id);
-                loadSuppliers();
-            }
-        }
-
-        document.getElementById('customerForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const customer = {
-                name: document.getElementById('customerName').value,
-                phone: document.getElementById('customerPhone').value,
-                address: document.getElementById('customerAddress').value
-            };
-
-            const editId = this.dataset.editId;
-            if (editId) {
-                db.updateCustomer(editId, customer);
-                delete this.dataset.editId;
-            } else {
-                db.addCustomer(customer);
-            }
-            this.reset();
-            loadCustomers();
-            showAlert('تم حفظ العميل بنجاح', 'success');
-        });
-
-        function loadCustomers() {
-            const customers = db.getCustomers();
-            const tbody = document.querySelector('#customersTable tbody');
-            tbody.innerHTML = '';
-
-            customers.forEach(customer => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${customer.name}</td>
-                    <td>${customer.phone || '-'}</td>
-                    <td>${customer.address || '-'}</td>
-                    <td>
-                        <button class="btn btn-warning" onclick="editCustomer('${customer.id}')">تعديل</button>
-                        <button class="btn btn-danger" onclick="deleteCustomer('${customer.id}')">حذف</button>
-                    </td>
-                `;
-                tbody.appendChild(row);
-            });
-        }
-
-        function editCustomer(id) {
-            const customer = db.getCustomers().find(c => c.id === id);
-            if (customer) {
-                document.getElementById('customerName').value = customer.name;
-                document.getElementById('customerPhone').value = customer.phone || '';
-                document.getElementById('customerAddress').value = customer.address || '';
-                document.getElementById('customerForm').dataset.editId = id;
-            }
-        }
-
-        function deleteCustomer(id) {
-            if (confirm('هل أنت متأكد من حذف هذا العميل؟')) {
-                db.deleteCustomer(id);
-                loadCustomers();
-            }
-        }
-
-        // ========================================
-        // الفواتير والطباعة
-        // ========================================
-        function showInvoice(sale) {
-            const modal = document.getElementById('invoiceModal');
-            const content = document.getElementById('invoiceContent');
-            
-            content.innerHTML = `
-                <div style="text-align: center; margin-bottom: 30px;">
-                    <h2>🛒 فاتورة المبيعات</h2>
-                    <p><strong>التاريخ:</strong> ${new Date().toLocaleDateString('ar-DZ')} ${new Date().toLocaleTimeString('ar-DZ')}</p>
-                    <p><strong>العميل:</strong> ${sale.customerName}</p>
-                </div>
-                <div style="margin-bottom: 20px;">
-                    <table style="width: 100%; border-collapse: collapse;">
-                        <thead>
-                            <tr style="background: #f8f9fa;">
-                                <th style="border: 1px solid #ddd; padding: 10px;">المنتج</th>
-                                <th style="border: 1px solid #ddd; padding: 10px;">الكمية</th>
-                                <th style="border: 1px solid #ddd; padding: 10px;">السعر</th>
-                                <th style="border: 1px solid #ddd; padding: 10px;">المجموع</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${sale.items.map(item => `
-                                <tr>
-                                    <td style="border: 1px solid #ddd; padding: 10px;">${item.name}</td>
-                                    <td style="border: 1px solid #ddd; padding: 10px; text-align: center;">${item.quantity}</td>
-                                    <td style="border: 1px solid #ddd; padding: 10px;">${item.price.toFixed(2)} د.ج</td>
-                                    <td style="border: 1px solid #ddd; padding: 10px; font-weight: bold;">
-                                        ${(item.price * item.quantity).toFixed(2)} د.ج
-                                    </td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                </div>
-                <div style="text-align: left; font-size: 18px;">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-                        <span>المجموع الفرعي:</span>
-                        <span>${sale.subtotal.toFixed(2)} د.ج</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-                        <span>ضريبة القيمة المضافة (19%):</span>
-                        <span>${sale.tax.toFixed(2)} د.ج</span>
-                    </div>
-                    <hr style="border: 2px solid #333;">
-                    <div style="display: flex; justify-content: space-between; font-size: 22px; font-weight: bold; color: #28a745;">
-                        <span>الإجمالي النهائي:</span>
-                        <span>${sale.total.toFixed(2)} د.ج</span>
-                    </div>
-                    <div style="margin-top: 20px; padding: 15px; background: #e9ecef; border-radius: 8px; font-size: 14px;">
-                        <strong>عدد القطع: ${sale.itemsCount}</strong>
-                    </div>
-                </div>
-            `;
-            
-            modal.style.display = 'block';
-        }
-
-        function printInvoice() {
-            const content = document.getElementById('invoiceContent').innerHTML;
-            const printWindow = window.open('', '_blank');
-            printWindow.document.write(`
-                <html>
-                    <head>
-                        <title>فاتورة المبيعات</title>
-                        <style>
-                            body { font-family: Arial, sans-serif; padding: 20px; direction: rtl; }
-                            table { width: 100%; border-collapse: collapse; }
-                            th, td { border: 1px solid #ddd; padding: 10px; text-align: right; }
-                            th { background: #f8f9fa; }
-                            @media print { body { margin: 0; } }
-                        </style>
-                    </head>
-                    <body>${content}</body>
-                </html>
-            `);
-            printWindow.document.close();
-            printWindow.print();
-        }
-
-        function closeModal(modalId) {
-            document.getElementById(modalId).style.display = 'none';
-        }
-
-        // ========================================
-        // التقارير
-        // ========================================
-        function generateReport(type) {
-            const content = document.getElementById('reportContent');
-            let sales = [];
-            
-            if (type === 'daily') {
-                sales = db.getDailySales(new Date().toDateString());
-                content.innerHTML = `
-                    <h3>📊 تقرير المبيعات اليومي</h3>
-                    <p><strong>التاريخ:</strong> ${new Date().toLocaleDateString('ar-DZ')}</p>
-                    <p><strong>عدد المبيعات:</strong> ${sales.length}</p>
-                    <p><strong>إجمالي المبيعات:</strong> ${sales.reduce((sum, s) => sum + s.total, 0).toFixed(2)} د.ج</p>
-                `;
-            } else if (type === 'monthly') {
-                const now = new Date();
-                sales = db.getMonthlySales(now.getFullYear(), now.getMonth() + 1);
-                content.innerHTML = `
-                    <h3>📊 تقرير المبيعات الشهري</h3>
-                    <p><strong>الشهر:</strong> ${now.toLocaleDateString('ar-DZ', { month: 'long', year: 'numeric' })}</p>
-                    <p><strong>عدد المبيعات:</strong> ${sales.length}</p>
-                    <p><strong>إجمالي المبيعات:</strong> ${sales.reduce((sum, s) => sum + s.total, 0).toFixed(2)} د.ج</p>
-                `;
-            }
-        }
-
-        function exportToCSV(type) {
-            let data, filename, headers;
-            
-            if (type === 'sales') {
-                data = db.getSales();
-                headers = ['التاريخ', 'العميل', 'عدد القطع', 'المجموع الفرعي', 'الضريبة', 'الإجمالي'];
-                filename = `مبيعات_${new Date().toISOString().split('T')[0]}.csv`;
-            } else {
-                data = db.getProducts();
-                headers = ['الكود', 'الاسم', 'السعر', 'الكمية', 'الحد الأدنى', 'الفئة'];
-                filename = `منتجات_${new Date().toISOString().split('T')[0]}.csv`;
-            }
-
-            const csv = [
-                headers.join(','),
-                ...data.map(row => Object.values(type === 'sales' ? {
-                    date: new Date(row.date).toLocaleDateString('ar-DZ'),
-                    customer: row.customerName,
-                    itemsCount: row.itemsCount,
-                    subtotal: row.subtotal,
-                    tax: row.tax,
-                    total: row.total
-                } : row).map(field => `"${field}"`).join(','))
-            ].join('\n');
-
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = filename;
-            link.click();
-        }
-
-        // ========================================
-        // وظائف مساعدة
-        // ========================================
-        function showAlert(message, type) {
-            const alert = document.createElement('div');
-            alert.className = `alert alert-${type}`;
-            alert.textContent = message;
-            
-            document.querySelector('.tab-content.active').insertBefore(alert, document.querySelector('.tab-content.active').firstChild);
-            
-            setTimeout(() => {
-                alert.remove();
-            }, 5000);
-        }
-
-        // إغلاق النافذة المنبثقة عند الضغط خارجها
-        window.onclick = function(event) {
-            const modal = document.getElementById('invoiceModal');
-            if (event.target === modal) {
-                modal.style.display = 'none';
-            }
-        }
-
-        // تحميل البيانات عند بدء التشغيل
-        window.addEventListener('load', function() {
-            loadProducts();
-            loadInventory();
-            loadSuppliers();
-            loadCustomers();
-        });
-
-        // دعم لوحة المفاتيح للمبيعات (Enter لإضافة منتج)
-        document.getElementById('saleProductSearch').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                searchProductForSale(this.value);
-            }
-        });
-
-        // إضافة منتج بالضغط على مسافة بعد البحث
-        document.addEventListener('keydown', function(e) {
-            if (e.code === 'Space' && document.activeElement.id === 'saleProductSearch') {
-                const query = document.getElementById('saleProductSearch').value;
-                const products = db.getProducts().filter(p => 
-                    p.code.includes(query) || p.name.toLowerCase().includes(query.toLowerCase())
-                );
-                if (products.length === 1) {
-                    e.preventDefault();
-                    addSaleItem(products[0]);
-                }
-            }
-        });
-    </script>
 </body>
 </html>
